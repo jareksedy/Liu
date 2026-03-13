@@ -16,12 +16,24 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            Text("六 liu")
-                .font(.system(size: 16, weight: .bold))
-
+            Text("Liù")
+                .font(.system(size: 12))
+            Text("六")
+                .font(.system(size: 48, weight: .regular))
+            Text("A Quiet Yi Jing Oracle")
+                .font(.system(size: 12))
+                .multilineTextAlignment(.center)
+            Text("In Your Menu Bar")
+                .font(.system(size: 10))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+                .padding(.top, -5)
+            
+            Divider()
+            
             // Hexagram display — lines appear bottom-to-top
             VStack(spacing: 8) {
-                ForEach((0..<6).reversed(), id: \.self) { index in
+                ForEach((0 ..< 6).reversed(), id: \.self) { index in
                     if index < tossCount {
                         lineView(yang: lines[index])
                             .transition(.opacity.combined(with: .scale))
@@ -30,33 +42,33 @@ struct ContentView: View {
                     }
                 }
             }
-            .animation(.easeInOut(duration: 0.3), value: tossCount)
+            .animation(.easeInOut(duration: 0.4), value: tossCount)
             .frame(height: 108)
 
-            if let result {
-                VStack(spacing: 6) {
-                    Text("\(result.id). \(result.chinese)")
-                        .font(.system(size: 18, weight: .semibold))
-                    Text(result.name)
-                        .font(.system(size: 12))
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-
-                    if let url = result.searchURL {
-                        Button("Search Interpretation") {
-                            NSWorkspace.shared.open(url)
-                        }
-                        .buttonStyle(.link)
-                        .font(.system(size: 12))
-                    }
-                }
-                .padding(.top, 4)
-            }
-
+//            if let result {
+//                VStack(spacing: 6) {
+//                    Text("\(result.id). \(result.chinese)")
+//                        .font(.system(size: 18, weight: .semibold))
+//                    Text(result.name)
+//                        .font(.system(size: 12))
+//                        .foregroundStyle(.secondary)
+//                        .multilineTextAlignment(.center)
+//
+//                    if let url = result.searchURL {
+//                        Button("Search Interpretation") {
+//                            NSWorkspace.shared.open(url)
+//                        }
+//                        .buttonStyle(.link)
+//                        .font(.system(size: 12))
+//                    }
+//                }
+//                .padding(.top, 4)
+//            }
+            
             Divider()
 
             HStack {
-                Button(isComplete ? "Toss Again" : "Toss Coin (\(tossCount)/6)") {
+                Button(isComplete ? "Start Over" : "Toss Coins (\(tossCount)/6)") {
                     toss()
                 }
                 .keyboardShortcut(.return, modifiers: [])
