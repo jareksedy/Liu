@@ -10,8 +10,11 @@ import SwiftUI
 @main
 struct liuApp: App {
     var body: some Scene {
-        WindowGroup {
+        MenuBarExtra {
             ContentView()
+        } label: {
+            Text("六")
         }
+        .menuBarExtraStyle(.window)
     }
 }
