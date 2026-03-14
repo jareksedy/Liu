@@ -17,7 +17,7 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 12) {
             resultView(result: result)
-                .animation(.easeInOut(duration: 0.4), value: isComplete)
+                .animation(.easeInOut(duration: Constants.animationDuration), value: isComplete)
             
             Divider()
             
@@ -32,7 +32,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .animation(.easeInOut(duration: 0.4), value: tossCount)
+            .animation(.easeInOut(duration: Constants.animationDuration), value: tossCount)
             .frame(height: 118)
             
             Divider()
@@ -77,15 +77,16 @@ private extension ContentView {
         VStack(spacing: 8) {
             if let result {
                 Text("\(result.id). \(result.pinyin)")
-                    .font(.system(size: 12))
+                    .font(.system(size: 12, weight: .bold))
                 Text(result.chinese)
                     .font(Constants.chineseCharacterFont)
-                    .padding([.top, .bottom], Constants.characterTopBottomPadding)
+                    .padding(.top, Constants.characterTopPadding)
+                    .padding(.bottom, Constants.characterBottomPadding)
                 Text("\(result.name)")
-                    .font(.system(size: 12))
+                    .font(.system(size: 12, weight: .bold))
                     .multilineTextAlignment(.center)
                 if let url = result.searchURL {
-                    Button("Search Interpretation") {
+                    Button("Interpretation") {
                         NSWorkspace.shared.open(url)
                     }
                     .buttonStyle(.link)
@@ -93,12 +94,13 @@ private extension ContentView {
                 }
             } else {
                 Text("Liù")
-                    .font(.system(size: 12))
+                    .font(.system(size: 12, weight: .bold))
                 Text("六")
                     .font(Constants.chineseCharacterFont)
-                    .padding([.top, .bottom], Constants.characterTopBottomPadding)
+                    .padding(.top, Constants.characterTopPadding)
+                    .padding(.bottom, Constants.characterBottomPadding)
                 Text("Menu Bar Yì Jīng Oracle")
-                    .font(.system(size: 12))
+                    .font(.system(size: 12, weight: .bold))
                     .multilineTextAlignment(.center)
                 Button("About The App") {
                     NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
@@ -147,6 +149,8 @@ extension Bool {
 
 fileprivate enum Constants {
     static let cornerRadius: CGFloat = 1
-    static let characterTopBottomPadding: CGFloat = 10
-    static let chineseCharacterFont: Font = .custom("LiuJianMaoCao-Regular", size: 64)
+    static let characterTopPadding: CGFloat = 10
+    static let characterBottomPadding: CGFloat = 4
+    static let chineseCharacterFont: Font = .custom("LXGWWenKaiMonoTC-Regular", size: 64)
+    static let animationDuration: TimeInterval = 0.25
 }
