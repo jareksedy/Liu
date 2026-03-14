@@ -10,10 +10,10 @@ import SwiftUI
 struct ContentView: View {
     @State private var lines: [Bool] = []
     @State private var result: Hexagram?
-
+    
     private var tossCount: Int { lines.count }
     private var isComplete: Bool { tossCount == 6 }
-
+    
     var body: some View {
         VStack(spacing: 12) {
             
@@ -34,37 +34,17 @@ struct ContentView: View {
             }
             .animation(.easeInOut(duration: 0.4), value: tossCount)
             .frame(height: 108)
-
-//            if let result {
-//                VStack(spacing: 6) {
-//                    Text("\(result.id). \(result.chinese)")
-//                        .font(.system(size: 18, weight: .semibold))
-//                    Text(result.name)
-//                        .font(.system(size: 12))
-//                        .foregroundStyle(.secondary)
-//                        .multilineTextAlignment(.center)
-//
-//                    if let url = result.searchURL {
-//                        Button("Search Interpretation") {
-//                            NSWorkspace.shared.open(url)
-//                        }
-//                        .buttonStyle(.link)
-//                        .font(.system(size: 12))
-//                    }
-//                }
-//                .padding(.top, 4)
-//            }
             
             Divider()
-
+            
             HStack {
                 Button(isComplete ? "Start Over" : "Toss Coins (\(tossCount)/6)") {
                     toss()
                 }
                 .keyboardShortcut(.return, modifiers: [])
-
+                
                 Spacer()
-
+                
                 Button("Quit") {
                     NSApplication.shared.terminate(nil)
                 }
@@ -74,42 +54,49 @@ struct ContentView: View {
         .padding()
         .frame(width: 220)
     }
+}
 
+private extension ContentView {
     // MARK: - Actions
-
     private func toss() {
         if isComplete {
             lines = []
             result = nil
         }
-
+        
         let yang = Bool.random()
         lines.append(yang)
-
+        
         if lines.count == 6 {
             result = HexagramLibrary.find(lines: lines)
         }
     }
     
     private func resultView(result: Hexagram?) -> some View {
-        VStack(spacing: 12) {
-            Text("Liù")
+        VStack(spacing: 8) {
+            Text(result?.pinyin ?? "Liù")
                 .font(.system(size: 12))
-            Text("六")
+            Text(result?.chinese ?? "六")
                 .font(.system(size: 48, weight: .regular))
-            Text("A Quiet Yi Jing Oracle")
+            Text(result?.name ?? "A Quiet Yi Jing Oracle")
                 .font(.system(size: 12))
                 .multilineTextAlignment(.center)
-             Text("In Your Menu Bar")
+            if let url = result?.searchURL {
+                Button("Search Interpretation") {
+                    NSWorkspace.shared.open(url)
+                }
+                .buttonStyle(.link)
                 .font(.system(size: 10))
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.top, -5)
+            } else {
+                Text("In Your Menu Bar")
+                    .font(.system(size: 10))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
-
+    
     // MARK: - Line drawing
-
     private func lineView(yang: Bool) -> some View {
         HStack(spacing: yang ? 0 : 26) {
             if yang {
@@ -128,15 +115,11 @@ struct ContentView: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 20)
     }
-
+    
     private func linePlaceholder() -> some View {
         RoundedRectangle(cornerRadius: 2)
             .frame(height: 10)
             .foregroundStyle(.quaternary)
             .padding(.horizontal, 20)
     }
-}
-
-#Preview {
-    ContentView()
 }
