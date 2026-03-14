@@ -65,7 +65,7 @@ private extension ContentView {
             return
         }
         
-        let yang = Bool.random()
+        let yang = Bool.yijingCoinsToss()
         lines.append(yang)
         
         if lines.count == 6 {
@@ -134,6 +134,13 @@ private extension ContentView {
             .frame(height: 10)
             .foregroundStyle(.quaternary)
             .padding(.horizontal, 20)
+    }
+}
+
+extension Bool {
+    static func yijingCoinsToss() -> Bool {
+        let headsCount = [Bool.random(), Bool.random(), Bool.random()].filter { $0 }.count
+        return headsCount >= 2
     }
 }
 
