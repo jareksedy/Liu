@@ -139,8 +139,9 @@ private extension ContentView {
 
 extension Bool {
     static func yijingCoinsToss() -> Bool {
-        let headsCount = [Bool.random(), Bool.random(), Bool.random()].filter { $0 }.count
-        return headsCount >= 2
+        (Bool.random() ? 1 : 0) +
+        (Bool.random() ? 1 : 0) +
+        (Bool.random() ? 1 : 0) >= 2
     }
 }
 
