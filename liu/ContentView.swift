@@ -18,6 +18,7 @@ struct ContentView: View {
         VStack(spacing: 12) {
             
             resultView(result: result)
+                .animation(.easeInOut(duration: 0.4), value: isComplete)
             
             Divider()
             
@@ -74,24 +75,38 @@ private extension ContentView {
     
     private func resultView(result: Hexagram?) -> some View {
         VStack(spacing: 8) {
-            Text(result?.pinyin ?? "Liù")
-                .font(.system(size: 12))
+            if let result {
+                Text("\(result.id)")
+                    .font(.system(size: 12))
+            } else {
+                Text(result?.pinyin ?? "Liù")
+                    .font(.system(size: 12))
+            }
+
             Text(result?.chinese ?? "六")
                 .font(.system(size: 48, weight: .regular))
-            Text(result?.name ?? "A Quiet Yi Jing Oracle")
-                .font(.system(size: 12))
-                .multilineTextAlignment(.center)
+            if let result {
+                Text("\(result.pinyin) (\(result.name))")
+                    .font(.system(size: 12))
+                    .multilineTextAlignment(.center)
+            } else {
+                Text(result?.name ?? "Menu Bar Yi Jing Oracle")
+                    .font(.system(size: 12))
+                    .multilineTextAlignment(.center)
+            }
+
             if let url = result?.searchURL {
-                Button("Search Interpretation") {
+                Button("Search Reading") {
                     NSWorkspace.shared.open(url)
                 }
                 .buttonStyle(.link)
-                .font(.system(size: 10))
+                .font(.system(size: 12))
             } else {
-                Text("In Your Menu Bar")
-                    .font(.system(size: 10))
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.secondary)
+                Button("About Liù") {
+                    NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
+                }
+                .buttonStyle(.link)
+                .font(.system(size: 12))
             }
         }
     }

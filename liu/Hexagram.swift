@@ -81,7 +81,7 @@ enum HexagramLibrary {
         Hexagram(id: 49, pinyin: "Gé", name: "Revolution", chinese: "革", lines: [true, false, true, true, true, false]),
         Hexagram(id: 50, pinyin: "Dǐng", name: "The Cauldron", chinese: "鼎", lines: [false, true, true, true, false, true]),
         Hexagram(id: 51, pinyin: "Zhèn", name: "The Arousing Thunder", chinese: "震", lines: [true, false, false, true, false, false]),
-        Hexagram(id: 52, pinyin: "Gèn", name: "Keeping Still Mountain", chinese: "艮", lines: [false, false, true, false, false, true]),
+        Hexagram(id: 52, pinyin: "Gèn", name: "Keeping Still", chinese: "艮", lines: [false, false, true, false, false, true]),
         Hexagram(id: 53, pinyin: "Jiàn", name: "Development", chinese: "渐", lines: [false, false, true, false, true, true]),
         Hexagram(id: 54, pinyin: "Guī Mèi", name: "The Marrying Maiden", chinese: "归妹", lines: [true, true, false, true, false, false]),
         Hexagram(id: 55, pinyin: "Fēng", name: "Abundance", chinese: "丰", lines: [true, false, true, true, false, false]),
