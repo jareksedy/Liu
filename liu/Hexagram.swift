@@ -89,7 +89,7 @@ enum HexagramLibrary {
         Hexagram(id: 57, pinyin: "Xùn", name: "The Gentle Wind", chinese: "巽", lines: [false, true, true, false, true, true]),
         Hexagram(id: 58, pinyin: "Duì", name: "The Joyous Lake", chinese: "兑", lines: [true, true, false, true, true, false]),
         Hexagram(id: 59, pinyin: "Huàn", name: "Dispersion", chinese: "涣", lines: [false, true, false, false, true, true]),
-        Hexagram(id: 60, pinyin: "Jié", name: "Limitation", chinese: "节", lines: [false, true, false, false, true, false]),
+        Hexagram(id: 60, pinyin: "Jié", name: "Limitation", chinese: "节", lines: [true, true, false, false, true, false]),
         Hexagram(id: 61, pinyin: "Zhōng Fú", name: "Inner Truth", chinese: "中孚", lines: [true, true, false, false, true, true]),
         Hexagram(id: 62, pinyin: "Xiǎo Guò", name: "Small Excess", chinese: "小过", lines: [false, false, true, true, false, false]),
         Hexagram(id: 63, pinyin: "Jì Jì", name: "After Completion", chinese: "既济", lines: [true, false, true, false, true, false]),
