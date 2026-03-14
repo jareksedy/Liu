@@ -16,18 +16,8 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            Text("Liù")
-                .font(.system(size: 12))
-            Text("六")
-                .font(.system(size: 48, weight: .regular))
-            Text("A Quiet Yi Jing Oracle")
-                .font(.system(size: 12))
-                .multilineTextAlignment(.center)
-            Text("In Your Menu Bar")
-                .font(.system(size: 10))
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.top, -5)
+            
+            resultView(result: result)
             
             Divider()
             
@@ -98,6 +88,23 @@ struct ContentView: View {
 
         if lines.count == 6 {
             result = HexagramLibrary.find(lines: lines)
+        }
+    }
+    
+    private func resultView(result: Hexagram?) -> some View {
+        VStack(spacing: 12) {
+            Text("Liù")
+                .font(.system(size: 12))
+            Text("六")
+                .font(.system(size: 48, weight: .regular))
+            Text("A Quiet Yi Jing Oracle")
+                .font(.system(size: 12))
+                .multilineTextAlignment(.center)
+             Text("In Your Menu Bar")
+                .font(.system(size: 10))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+                .padding(.top, -5)
         }
     }
 
