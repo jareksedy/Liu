@@ -16,7 +16,6 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 12) {
-            
             resultView(result: result)
                 .animation(.easeInOut(duration: 0.4), value: isComplete)
             
@@ -34,7 +33,7 @@ struct ContentView: View {
                 }
             }
             .animation(.easeInOut(duration: 0.4), value: tossCount)
-            .frame(height: 108)
+            .frame(height: 118)
             
             Divider()
             
@@ -60,9 +59,10 @@ struct ContentView: View {
 private extension ContentView {
     // MARK: - Actions
     private func toss() {
-        if isComplete {
+        guard !isComplete else {
             lines = []
             result = nil
+            return
         }
         
         let yang = Bool.random()
@@ -76,33 +76,31 @@ private extension ContentView {
     private func resultView(result: Hexagram?) -> some View {
         VStack(spacing: 8) {
             if let result {
-                Text("\(result.id)")
+                Text("\(result.id). \(result.pinyin)")
                     .font(.system(size: 12))
-            } else {
-                Text(result?.pinyin ?? "Liù")
-                    .font(.system(size: 12))
-            }
-
-            Text(result?.chinese ?? "六")
-                .font(.system(size: 48, weight: .regular))
-            if let result {
-                Text("\(result.pinyin) (\(result.name))")
+                Text(result.chinese)
+                    .font(Constants.chineseCharacterFont)
+                    .padding([.top, .bottom], Constants.characterTopBottomPadding)
+                Text("\(result.name)")
                     .font(.system(size: 12))
                     .multilineTextAlignment(.center)
-            } else {
-                Text(result?.name ?? "Menu Bar Yi Jing Oracle")
+                if let url = result.searchURL {
+                    Button("Search Interpretation") {
+                        NSWorkspace.shared.open(url)
+                    }
+                    .buttonStyle(.link)
                     .font(.system(size: 12))
-                    .multilineTextAlignment(.center)
-            }
-
-            if let url = result?.searchURL {
-                Button("Search Reading") {
-                    NSWorkspace.shared.open(url)
                 }
-                .buttonStyle(.link)
-                .font(.system(size: 12))
             } else {
-                Button("About Liù") {
+                Text("Liù")
+                    .font(.system(size: 12))
+                Text("六")
+                    .font(Constants.chineseCharacterFont)
+                    .padding([.top, .bottom], Constants.characterTopBottomPadding)
+                Text("Menu Bar Yì Jīng Oracle")
+                    .font(.system(size: 12))
+                    .multilineTextAlignment(.center)
+                Button("About The App") {
                     NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
                 }
                 .buttonStyle(.link)
@@ -115,16 +113,16 @@ private extension ContentView {
     private func lineView(yang: Bool) -> some View {
         HStack(spacing: yang ? 0 : 26) {
             if yang {
-                RoundedRectangle(cornerRadius: 2)
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
                     .frame(height: 10)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color(nsColor: .labelColor))
             } else {
-                RoundedRectangle(cornerRadius: 2)
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
                     .frame(height: 10)
-                    .foregroundStyle(.primary)
-                RoundedRectangle(cornerRadius: 2)
+                    .foregroundStyle(Color(nsColor: .labelColor))
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
                     .frame(height: 10)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color(nsColor: .labelColor))
             }
         }
         .frame(maxWidth: .infinity)
@@ -132,9 +130,15 @@ private extension ContentView {
     }
     
     private func linePlaceholder() -> some View {
-        RoundedRectangle(cornerRadius: 2)
+        RoundedRectangle(cornerRadius: Constants.cornerRadius)
             .frame(height: 10)
             .foregroundStyle(.quaternary)
             .padding(.horizontal, 20)
     }
+}
+
+fileprivate enum Constants {
+    static let cornerRadius: CGFloat = 1
+    static let characterTopBottomPadding: CGFloat = 10
+    static let chineseCharacterFont: Font = .custom("LiuJianMaoCao-Regular", size: 64)
 }
