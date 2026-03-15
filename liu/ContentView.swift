@@ -77,7 +77,7 @@ private extension ContentView {
         VStack(spacing: 8) {
             if let result {
                 Text("\(result.id). \(result.pinyin)")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .regular))
                 Text(result.chinese)
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
@@ -94,13 +94,13 @@ private extension ContentView {
                 }
             } else {
                 Text("Liù")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .regular))
                 Text("六")
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
                 Text("Menu Bar Yì Jīng Oracle")
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.system(size: 12, weight: .bold))
                     .multilineTextAlignment(.center)
                 Button("About The App") {
                     NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
@@ -149,8 +149,8 @@ extension Bool {
 
 fileprivate enum Constants {
     static let cornerRadius: CGFloat = 2
-    static let characterTopPadding: CGFloat = 15
+    static let characterTopPadding: CGFloat = 20
     static let characterBottomPadding: CGFloat = 15
-    static let chineseCharacterFont: Font = .custom("LiuJianMaoCao-Regular", size: 72) //.custom("LXGWWenKaiMonoTC-Regular", size: 64)
+    static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72) //.custom("LXGWWenKaiMonoTC-Regular", size: 64)
     static let animationDuration: TimeInterval = 0.25
 }
