@@ -148,9 +148,9 @@ extension Bool {
 }
 
 fileprivate enum Constants {
-    static let cornerRadius: CGFloat = 1
-    static let characterTopPadding: CGFloat = 10
-    static let characterBottomPadding: CGFloat = 4
-    static let chineseCharacterFont: Font = .custom("LXGWWenKaiMonoTC-Regular", size: 64)
+    static let cornerRadius: CGFloat = 2
+    static let characterTopPadding: CGFloat = 20
+    static let characterBottomPadding: CGFloat = 20
+    static let chineseCharacterFont: Font = .custom("LiuJianMaoCao-Regular", size: 72) //.custom("LXGWWenKaiMonoTC-Regular", size: 64)
     static let animationDuration: TimeInterval = 0.25
 }
