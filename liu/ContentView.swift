@@ -100,7 +100,7 @@ private extension ContentView {
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
                 Text("Menu Bar Yì Jīng Oracle")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .regular))
                     .multilineTextAlignment(.center)
                 Button("About The App") {
                     NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
@@ -149,8 +149,8 @@ extension Bool {
 
 fileprivate enum Constants {
     static let cornerRadius: CGFloat = 2
-    static let characterTopPadding: CGFloat = 20
-    static let characterBottomPadding: CGFloat = 20
+    static let characterTopPadding: CGFloat = 15
+    static let characterBottomPadding: CGFloat = 15
     static let chineseCharacterFont: Font = .custom("LiuJianMaoCao-Regular", size: 72) //.custom("LXGWWenKaiMonoTC-Regular", size: 64)
     static let animationDuration: TimeInterval = 0.25
 }
