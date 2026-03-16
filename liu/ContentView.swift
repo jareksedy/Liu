@@ -22,7 +22,7 @@ struct ContentView: View {
             Divider()
             
             // Hexagram display — lines appear bottom-to-top
-            VStack(spacing: 8) {
+            VStack(spacing: Constants.lineSpacing) {
                 ForEach((0 ..< 6).reversed(), id: \.self) { index in
                     if index < tossCount {
                         lineView(yang: lines[index])
@@ -33,7 +33,7 @@ struct ContentView: View {
                 }
             }
             .animation(.easeInOut(duration: Constants.animationDuration), value: tossCount)
-            .frame(height: 118)
+            .padding([.top, .bottom], Constants.hexagramTopBottomPadding)
             
             Divider()
             
@@ -77,7 +77,7 @@ private extension ContentView {
         VStack(spacing: 8) {
             if let result {
                 Text("\(result.id). \(result.pinyin)")
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.system(size: 12, weight: .bold))
                 Text(result.chinese)
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
@@ -86,7 +86,7 @@ private extension ContentView {
                     .font(.system(size: 12, weight: .bold))
                     .multilineTextAlignment(.center)
                 if let url = result.searchURL {
-                    Button("Interpretation") {
+                    Button("Search Interpretation") {
                         NSWorkspace.shared.open(url)
                     }
                     .buttonStyle(.link)
@@ -94,7 +94,7 @@ private extension ContentView {
                 }
             } else {
                 Text("Liù")
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.system(size: 12, weight: .bold))
                 Text("六")
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
@@ -113,29 +113,29 @@ private extension ContentView {
     
     // MARK: - Line drawing
     private func lineView(yang: Bool) -> some View {
-        HStack(spacing: yang ? 0 : 26) {
+        HStack(spacing: yang ? 0 : Constants.yinPadding) {
             if yang {
                 RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                    .frame(height: 10)
+                    .frame(height: Constants.lineHeight)
                     .foregroundStyle(Color(nsColor: .labelColor))
             } else {
                 RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                    .frame(height: 10)
+                    .frame(height: Constants.lineHeight)
                     .foregroundStyle(Color(nsColor: .labelColor))
                 RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                    .frame(height: 10)
+                    .frame(height: Constants.lineHeight)
                     .foregroundStyle(Color(nsColor: .labelColor))
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, 20)
+        .padding(.horizontal, Constants.horizontalLinePadding)
     }
     
     private func linePlaceholder() -> some View {
         RoundedRectangle(cornerRadius: Constants.cornerRadius)
-            .frame(height: 10)
+            .frame(height: Constants.lineHeight)
             .foregroundStyle(.quaternary)
-            .padding(.horizontal, 20)
+            .padding(.horizontal, Constants.horizontalLinePadding)
     }
 }
 
@@ -148,9 +148,14 @@ extension Bool {
 }
 
 fileprivate enum Constants {
+    static let characterTopPadding: CGFloat = 18
+    static let characterBottomPadding: CGFloat = 12
+    static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
+    static let animationDuration: TimeInterval = 0.20
+    static let hexagramTopBottomPadding: CGFloat = 10
+    static let lineSpacing: CGFloat = 10
     static let cornerRadius: CGFloat = 2
-    static let characterTopPadding: CGFloat = 20
-    static let characterBottomPadding: CGFloat = 15
-    static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72) //.custom("LXGWWenKaiMonoTC-Regular", size: 64)
-    static let animationDuration: TimeInterval = 0.25
+    static let yinPadding: CGFloat = 20
+    static let lineHeight: CGFloat = 10
+    static let horizontalLinePadding: CGFloat = 20
 }
