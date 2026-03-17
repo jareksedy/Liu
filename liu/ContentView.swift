@@ -86,7 +86,7 @@ private extension ContentView {
                     .font(.system(size: 12, weight: .bold))
                     .multilineTextAlignment(.center)
                 if let url = result.searchURL {
-                    Button("Search Interpretation") {
+                    Button("Look It Up") {
                         NSWorkspace.shared.open(url)
                     }
                     .buttonStyle(.link)
@@ -154,7 +154,7 @@ fileprivate enum Constants {
     static let animationDuration: TimeInterval = 0.20
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
-    static let cornerRadius: CGFloat = 2
+    static let cornerRadius: CGFloat = 1
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
     static let horizontalLinePadding: CGFloat = 20
