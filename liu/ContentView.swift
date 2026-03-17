@@ -26,7 +26,7 @@ struct ContentView: View {
                 ForEach((0 ..< 6).reversed(), id: \.self) { index in
                     if index < tossCount {
                         lineView(yang: lines[index])
-                            .transition(.opacity.combined(with: .scale))
+                            .transition(.blurReplace)
                     } else {
                         linePlaceholder()
                     }
@@ -151,7 +151,7 @@ fileprivate enum Constants {
     static let characterTopPadding: CGFloat = 18
     static let characterBottomPadding: CGFloat = 12
     static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
-    static let animationDuration: TimeInterval = 0.20
+    static let animationDuration: TimeInterval = 0.3
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
     static let cornerRadius: CGFloat = 1
