@@ -26,7 +26,7 @@ struct ContentView: View {
                 ForEach((0 ..< 6).reversed(), id: \.self) { index in
                     if index < tossCount {
                         lineView(yang: lines[index])
-                            .transition(.blurReplace)
+                            .transition(.blurReplace(.downUp).combined(with: .scale(0.9)))
                     } else {
                         linePlaceholder()
                     }
@@ -68,7 +68,7 @@ private extension ContentView {
         let yang = Bool.yijingCoinsToss()
         lines.append(yang)
         
-        if lines.count == 6 {
+        if isComplete {
             result = HexagramLibrary.find(lines: lines)
         }
     }
@@ -151,10 +151,10 @@ fileprivate enum Constants {
     static let characterTopPadding: CGFloat = 18
     static let characterBottomPadding: CGFloat = 12
     static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
-    static let animationDuration: TimeInterval = 0.35
+    static let animationDuration: TimeInterval = 0.225
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
-    static let cornerRadius: CGFloat = 1
+    static let cornerRadius: CGFloat = 2
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
     static let horizontalLinePadding: CGFloat = 20
