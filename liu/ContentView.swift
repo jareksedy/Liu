@@ -17,7 +17,7 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 12) {
             resultView(result: result)
-                .animation(.easeInOut(duration: Constants.animationDuration), value: isComplete)
+                .animation(.easeInOut(duration: Constants.animationDuration * 1.25), value: isComplete)
             
             Divider()
             
