@@ -26,7 +26,7 @@ struct ContentView: View {
                 ForEach((0 ..< 6).reversed(), id: \.self) { index in
                     if index < tossCount {
                         lineView(yang: lines[index])
-                            .transition(.blurReplace(.downUp).combined(with: .scale(0.9)))
+                            .transition(.blurReplace(.downUp).combined(with: .scale(0.75)))
                     } else {
                         linePlaceholder()
                     }
@@ -154,7 +154,7 @@ fileprivate enum Constants {
     static let animationDuration: TimeInterval = 0.225
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
-    static let cornerRadius: CGFloat = 2
+    static let cornerRadius: CGFloat = 3
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
     static let horizontalLinePadding: CGFloat = 20
