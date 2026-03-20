@@ -38,18 +38,22 @@ struct ContentView: View {
             
             Divider()
             
-            HStack {
-                Button(isComplete ? "Start Over" : "Toss Coins (\(tossCount)/6)") {
+            VStack(spacing: 12) {
+                Button(isComplete ? "Restart" : "Toss Coins \(tossCount) of 6") {
                     toss()
                 }
                 .keyboardShortcut(.return, modifiers: [])
-                
-                Spacer()
+                .buttonStyle(PrimaryButton())
+                .padding(.horizontal, Constants.horizontalLinePadding - 4)
+                .padding(.top, 6)
                 
                 Button("Quit") {
                     NSApplication.shared.terminate(nil)
                 }
+                .buttonStyle(.link)
+                .font(Constants.monospacedRegularFont)
                 .keyboardShortcut("q")
+                .padding(.bottom, 2.5)
             }
         }
         .padding()
@@ -141,6 +145,37 @@ private extension ContentView {
     }
 }
 
+private struct PrimaryButton: ButtonStyle {
+    @State private var isHovered = false
+    
+    private func getBackground(isPressed: Bool) -> Color {
+        if isHovered {
+            Color(nsColor: .linkColor).opacity(0.1) //.opacity(isPressed ? 0.1 : 0.075)
+        } else {
+            .clear
+        }
+    }
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(Constants.monospacedRegularFont)
+            .foregroundStyle(Color(nsColor: .linkColor))
+            .padding(9)
+            .frame(maxWidth: .infinity)
+            .background(getBackground(isPressed: configuration.isPressed))
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .strokeBorder(Color(nsColor: .linkColor), lineWidth: 1)
+            )
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+            .animation(.easeInOut(duration: 0.1), value: isHovered)
+            .onHover { hovering in
+                isHovered = hovering
+            }
+    }
+}
+
 extension Bool {
     static func yijingCoinsToss() -> Bool {
         (Bool.random() ? 1 : 0) +
@@ -151,7 +186,7 @@ extension Bool {
 
 fileprivate enum Constants {
     static let characterTopPadding: CGFloat = 14
-    static let characterBottomPadding: CGFloat = 13
+    static let characterBottomPadding: CGFloat = 12
     static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
     static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
     static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
