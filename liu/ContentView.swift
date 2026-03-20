@@ -18,6 +18,7 @@ struct ContentView: View {
         VStack(spacing: 12) {
             resultView(result: result)
                 .animation(.easeInOut(duration: Constants.animationDuration * 1.25), value: isComplete)
+                .padding(.bottom, 10)
             
             Divider()
             
@@ -77,36 +78,37 @@ private extension ContentView {
         VStack(spacing: 8) {
             if let result {
                 Text("\(result.id). \(result.pinyin)")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(Constants.monospacedBoldFont)
                 Text(result.chinese)
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
                 Text("\(result.name)")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
                 if let url = result.searchURL {
-                    Button("Look It Up") {
+                    Button("Look It Up →") {
                         NSWorkspace.shared.open(url)
                     }
                     .buttonStyle(.link)
-                    .font(.system(size: 12))
+                    .font(Constants.monospacedRegularFont)
+                    .padding(.trailing, -3.5)
                 }
             } else {
                 Text("Liù")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(Constants.monospacedBoldFont)
                 Text("六")
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
-                Text("Menu Bar Yì Jīng Oracle")
-                    .font(.system(size: 12, weight: .bold))
+                Text("Menu Bar Yì Jīng App")
+                    .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
-                Button("About The App") {
+                Button("About Liù") {
                     NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
                 }
                 .buttonStyle(.link)
-                .font(.system(size: 12))
+                .font(Constants.monospacedRegularFont)
             }
         }
     }
@@ -148,14 +150,20 @@ extension Bool {
 }
 
 fileprivate enum Constants {
-    static let characterTopPadding: CGFloat = 18
-    static let characterBottomPadding: CGFloat = 12
+    static let characterTopPadding: CGFloat = 14
+    static let characterBottomPadding: CGFloat = 13
     static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
+    static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
+    static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
     static let animationDuration: TimeInterval = 0.225
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
-    static let cornerRadius: CGFloat = 3
+    static let cornerRadius: CGFloat = 1
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
     static let horizontalLinePadding: CGFloat = 20
+}
+
+#Preview {
+    ContentView()
 }
