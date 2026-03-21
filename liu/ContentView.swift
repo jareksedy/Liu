@@ -5,11 +5,13 @@
 //  Created by Ярослав on 20.02.2026.
 //
 
+import AVFoundation
 import SwiftUI
 
 struct ContentView: View {
     @State private var lines: [Bool] = []
     @State private var result: Hexagram?
+    @State private var audioPlayer: AVAudioPlayer?
     
     private var tossCount: Int { lines.count }
     private var isComplete: Bool { tossCount == 6 }
@@ -18,7 +20,7 @@ struct ContentView: View {
         VStack(spacing: 12) {
             resultView(result: result)
                 .animation(.easeInOut(duration: Constants.animationDuration * 1.25), value: isComplete)
-                .padding(.bottom, 10)
+                .padding(.bottom, 6)
             
             Divider()
             
@@ -67,15 +69,24 @@ private extension ContentView {
         guard !isComplete else {
             lines = []
             result = nil
+            playSound(.restart)
             return
         }
         
         let yang = Bool.yijingCoinsToss()
         lines.append(yang)
         
+        playSound(isComplete ? .cast : .toss)
+        
         if isComplete {
             result = HexagramLibrary.find(lines: lines)
         }
+    }
+    
+    private func playSound(_ soundEffect: SoundEffect) {
+        guard let url = soundEffect.url else { return }
+        audioPlayer = try? AVAudioPlayer(contentsOf: url)
+        audioPlayer?.play()
     }
     
     private func resultView(result: Hexagram?) -> some View {
@@ -193,10 +204,10 @@ fileprivate enum Constants {
     static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
     static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
     static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
-    static let animationDuration: TimeInterval = 0.225
+    static let animationDuration: TimeInterval = 0.25
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
-    static let cornerRadius: CGFloat = 1
+    static let cornerRadius: CGFloat = 2
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
     static let horizontalLinePadding: CGFloat = 20
@@ -204,4 +215,21 @@ fileprivate enum Constants {
 
 #Preview {
     ContentView()
+}
+
+enum SoundEffect {
+    case toss
+    case cast
+    case restart
+    
+    var url: URL? {
+        switch self {
+        case .toss:
+            return Bundle.main.url(forResource: "coin-flip-\(Int.random(in: 1...3))", withExtension: "mp3")
+        case .cast:
+            return Bundle.main.url(forResource: "guzheng-2", withExtension: "mp3")
+        case .restart:
+            return Bundle.main.url(forResource: "guzheng-1", withExtension: "mp3")
+        }
+    }
 }
