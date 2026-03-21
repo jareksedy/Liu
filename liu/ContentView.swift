@@ -97,6 +97,7 @@ private extension ContentView {
                     .buttonStyle(.link)
                     .font(Constants.monospacedRegularFont)
                     .padding(.trailing, -3.5)
+                    .padding(.top, Constants.lookupButtonTopPadding)
                 }
             } else {
                 Text("Liù")
@@ -113,6 +114,7 @@ private extension ContentView {
                 }
                 .buttonStyle(.link)
                 .font(Constants.monospacedRegularFont)
+                .padding(.top, Constants.lookupButtonTopPadding)
             }
         }
     }
@@ -185,6 +187,7 @@ extension Bool {
 }
 
 fileprivate enum Constants {
+    static let lookupButtonTopPadding: CGFloat = 5
     static let characterTopPadding: CGFloat = 14
     static let characterBottomPadding: CGFloat = 12
     static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
