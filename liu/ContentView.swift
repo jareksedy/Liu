@@ -16,7 +16,6 @@ struct Line: Identifiable {
 struct ContentView: View {
     @State private var lines: [Line] = []
     @State private var result: Hexagram?
-    @State private var audioPlayers: [AVAudioPlayer] = []
     @State private var isRestarting = false
     
     private var tossCount: Int { lines.count }
@@ -113,17 +112,20 @@ private extension ContentView {
     }
     
     private func playSound(_ soundEffect: SoundEffect) {
-        guard let data = SoundEffect.cache[soundEffect],
-              let player = try? AVAudioPlayer(data: data) else { return }
-        if soundEffect == .toss {
+        let rate: Float = soundEffect == .toss ? .random(in: 0.8...1.2) : 1.0
+        let volume: Float = soundEffect == .toss ? .random(in: 0.4...1.0) : 1.0
+        let pan: Float = soundEffect == .toss ? .random(in: -1.0...1.0) : 0.0
+        SoundEffect.playQueue.async {
+            guard let data = SoundEffect.cache[soundEffect],
+                  let player = try? AVAudioPlayer(data: data) else { return }
             player.enableRate = true
-            player.rate = Float.random(in: 0.8...1.2)
-            player.volume = Float.random(in: 0.4...1.0)
-            player.pan = Float.random(in: -1.0...1.0)
+            player.rate = rate
+            player.volume = volume
+            player.pan = pan
+            SoundEffect.activePlayers.removeAll { !$0.isPlaying }
+            SoundEffect.activePlayers.append(player)
+            player.play()
         }
-        audioPlayers.removeAll { !$0.isPlaying }
-        audioPlayers.append(player)
-        player.play()
     }
     
     private func resultView(result: Hexagram?) -> some View {
@@ -247,10 +249,13 @@ fileprivate enum Constants {
     ContentView()
 }
 
-enum SoundEffect: CaseIterable, Hashable {
+nonisolated enum SoundEffect: CaseIterable, Hashable, Sendable {
     case toss
     case cast
     case restart
+    
+    static let playQueue = DispatchQueue(label: "liu.sound", qos: .userInitiated)
+    static var activePlayers: [AVAudioPlayer] = []
     
     static let cache: [SoundEffect: Data] = {
         var result: [SoundEffect: Data] = [:]
