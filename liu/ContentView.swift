@@ -121,7 +121,7 @@ private extension ContentView {
                 player.volume = .random(in: 0.2...0.8)
                 player.pan = .random(in: -1.0...1.0)
             } else {
-                player.volume = 0.8
+                player.volume = 0.35
             }
             SoundEffect.activePlayers.removeAll { !$0.isPlaying }
             SoundEffect.activePlayers.append(player)
@@ -231,8 +231,8 @@ extension Bool {
 
 fileprivate enum Constants {
     static let lookupButtonTopPadding: CGFloat = 5
-    static let characterTopPadding: CGFloat = 14
-    static let characterBottomPadding: CGFloat = 12
+    static let characterTopPadding: CGFloat = 18
+    static let characterBottomPadding: CGFloat = 16
     static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
     static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
     static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
