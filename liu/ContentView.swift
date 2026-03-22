@@ -47,8 +47,19 @@ struct ContentView: View {
             Divider()
             
             VStack(spacing: 12) {
-                Button(isComplete || isRestarting ? "Restart" : "Toss Coins \(tossCount) of 6") {
-                    toss()
+                Button(action: toss) {
+                    if isComplete || isRestarting {
+                        Text("Restart")
+                    } else {
+                        HStack(spacing: 0) {
+                            Text("Toss Coins ")
+                            Text("\(tossCount)")
+                                .monospacedDigit()
+                                .contentTransition(.numericText(countsDown: isRestarting))
+                                .animation(.snappy(duration: Constants.animationDuration), value: tossCount)
+                            Text(" of 6")
+                        }
+                    }
                 }
                 .keyboardShortcut(.return, modifiers: [])
                 .disabled(isRestarting)
