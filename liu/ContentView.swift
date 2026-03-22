@@ -29,13 +29,18 @@ struct ContentView: View {
                 ForEach((0 ..< 6).reversed(), id: \.self) { index in
                     if index < tossCount {
                         lineView(yang: lines[index])
-                            .transition(.blurReplace(.downUp).combined(with: .scale(0.75)))
+                            .transition(
+                                .asymmetric(
+                                    insertion: .scale(scale: 0.5, anchor: .center).combined(with: .opacity),
+                                    removal: .scale(scale: 0.0, anchor: .center).combined(with: .opacity)
+                                )
+                            )
                     } else {
                         linePlaceholder()
                     }
                 }
             }
-            .animation(.easeInOut(duration: Constants.animationDuration), value: tossCount)
+            .animation(.snappy(duration: Constants.animationDuration, extraBounce: 0.25), value: tossCount)
             .padding([.top, .bottom], Constants.hexagramTopBottomPadding)
             
             Divider()
