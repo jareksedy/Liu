@@ -113,8 +113,8 @@ private extension ContentView {
     }
     
     private func playSound(_ soundEffect: SoundEffect) {
-        guard let url = soundEffect.url,
-              let player = try? AVAudioPlayer(contentsOf: url) else { return }
+        guard let data = SoundEffect.cache[soundEffect],
+              let player = try? AVAudioPlayer(data: data) else { return }
         if soundEffect == .toss {
             player.enableRate = true
             player.rate = Float.random(in: 0.8...1.2)
@@ -247,10 +247,20 @@ fileprivate enum Constants {
     ContentView()
 }
 
-enum SoundEffect {
+enum SoundEffect: CaseIterable, Hashable {
     case toss
     case cast
     case restart
+    
+    static let cache: [SoundEffect: Data] = {
+        var result: [SoundEffect: Data] = [:]
+        for effect in SoundEffect.allCases {
+            if let url = effect.url, let data = try? Data(contentsOf: url) {
+                result[effect] = data
+            }
+        }
+        return result
+    }()
     
     var url: URL? {
         switch self {
