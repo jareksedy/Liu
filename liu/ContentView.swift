@@ -8,10 +8,16 @@
 import AVFoundation
 import SwiftUI
 
+struct Line: Identifiable {
+    let id = UUID()
+    let yang: Bool
+}
+
 struct ContentView: View {
-    @State private var lines: [Bool] = []
+    @State private var lines: [Line] = []
     @State private var result: Hexagram?
     @State private var audioPlayers: [AVAudioPlayer] = []
+    @State private var isRestarting = false
     
     private var tossCount: Int { lines.count }
     private var isComplete: Bool { tossCount == 6 }
@@ -19,22 +25,18 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 12) {
             resultView(result: result)
-                .animation(.easeInOut(duration: Constants.animationDuration * 1.25), value: isComplete)
+                .animation(.easeInOut(duration: Constants.animationDuration * 1.75), value: result == nil)
                 .padding(.bottom, 6)
             
             Divider()
             
             // Hexagram display — lines appear bottom-to-top
             VStack(spacing: Constants.lineSpacing) {
-                ForEach((0 ..< 6).reversed(), id: \.self) { index in
+                ForEach((0..<6).reversed(), id: \.self) { index in
                     if index < tossCount {
-                        lineView(yang: lines[index])
-                            .transition(
-                                .asymmetric(
-                                    insertion: .scale(scale: 0.5, anchor: .center).combined(with: .opacity),
-                                    removal: .scale(scale: 0.0, anchor: .center).combined(with: .opacity)
-                                )
-                            )
+                        lineView(yang: lines[index].yang)
+                            .id(lines[index].id)
+                            .transition(.scale(scale: 0.75, anchor: .center).combined(with: .opacity))
                     } else {
                         linePlaceholder()
                     }
@@ -46,10 +48,11 @@ struct ContentView: View {
             Divider()
             
             VStack(spacing: 12) {
-                Button(isComplete ? "Restart" : "Toss Coins \(tossCount) of 6") {
+                Button(isComplete || isRestarting ? "Restart" : "Toss Coins \(tossCount) of 6") {
                     toss()
                 }
                 .keyboardShortcut(.return, modifiers: [])
+                .disabled(isRestarting)
                 .buttonStyle(PrimaryButton())
                 .padding(.horizontal, Constants.horizontalLinePadding - 4)
                 .padding(.top, 6)
@@ -65,6 +68,7 @@ struct ContentView: View {
         }
         .padding()
         .frame(width: 220)
+
     }
 }
 
@@ -72,28 +76,45 @@ private extension ContentView {
     // MARK: - Actions
     private func toss() {
         guard !isComplete else {
-            lines = []
-            result = nil
-            playSound(.restart)
+            restart()
             return
         }
         
         let yang = Bool.yijingCoinsToss()
-        lines.append(yang)
+        lines.append(Line(yang: yang))
         
         playSound(.toss)
         
         if isComplete {
-            result = HexagramLibrary.find(lines: lines)
+            result = HexagramLibrary.find(lines: lines.map(\.yang))
             playSound(.cast)
+        }
+    }
+    
+    private func restart() {
+        isRestarting = true
+        playSound(.restart)
+        
+        withAnimation(.easeInOut(duration: Constants.animationDuration * 1.25)) {
+            result = nil
+        }
+        
+        let count = lines.count
+        for i in 0..<count {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Constants.restartLineDelay * Double(i)) {
+                withAnimation(.snappy(duration: Constants.animationDuration, extraBounce: 0.25)) {
+                    _ = lines.removeLast()
+                }
+                if lines.isEmpty {
+                    isRestarting = false
+                }
+            }
         }
     }
     
     private func playSound(_ soundEffect: SoundEffect) {
         guard let url = soundEffect.url,
-              let player = try? AVAudioPlayer(contentsOf: url) else {
-            return
-        }
+              let player = try? AVAudioPlayer(contentsOf: url) else { return }
         if soundEffect == .toss {
             player.enableRate = true
             player.rate = Float.random(in: 0.8...1.2)
@@ -213,6 +234,7 @@ fileprivate enum Constants {
     static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
     static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
     static let animationDuration: TimeInterval = 0.25
+    static let restartLineDelay: TimeInterval = 0.045
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
     static let cornerRadius: CGFloat = 2
@@ -241,3 +263,4 @@ enum SoundEffect {
         }
     }
 }
+
