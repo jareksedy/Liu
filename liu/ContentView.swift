@@ -48,21 +48,24 @@ struct ContentView: View {
             
             VStack(spacing: 12) {
                 Button(action: toss) {
-                    if isComplete || isRestarting {
-                        Text("Restart")
-                    } else {
-                        HStack(spacing: 0) {
-                            Text("Toss Coins ")
-                            Text("\(tossCount)")
-                                .monospacedDigit()
-                                .contentTransition(.numericText(countsDown: isRestarting))
-                                .animation(.snappy(duration: Constants.animationDuration), value: tossCount)
-                            Text(" of 6")
+                    Group {
+                        if isComplete && !isRestarting {
+                            Text("Restart")
+                        } else {
+                            HStack(spacing: 0) {
+                                Text("Toss Coins ")
+                                Text("\(tossCount)")
+                                    .monospacedDigit()
+                                    .contentTransition(.numericText(countsDown: isRestarting))
+                                    .animation(.snappy(duration: Constants.animationDuration), value: tossCount)
+                                Text(" of 6")
+                            }
                         }
                     }
+                    .animation(.easeInOut(duration: 0.15), value: isComplete)
+                    .animation(.easeInOut(duration: 0.15), value: isRestarting)
                 }
                 .keyboardShortcut(.return, modifiers: [])
-                .disabled(isRestarting)
                 .buttonStyle(PrimaryButton())
                 .padding(.horizontal, Constants.horizontalLinePadding - 4)
                 .padding(.top, 6)
@@ -85,6 +88,7 @@ struct ContentView: View {
 private extension ContentView {
     // MARK: - Actions
     private func toss() {
+        guard !isRestarting else { return }
         guard !isComplete else {
             restart()
             return
@@ -209,11 +213,13 @@ private extension ContentView {
     }
 }
 
-private struct PrimaryButton: ButtonStyle {
+private struct PrimaryButtonLabel<Label: View>: View {
+    let label: Label
+    let isPressed: Bool
     @State private var isHovered = false
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
+    
+    var body: some View {
+        label
             .font(Constants.monospacedRegularFont)
             .foregroundStyle(Color(nsColor: .linkColor))
             .padding(9)
@@ -224,11 +230,17 @@ private struct PrimaryButton: ButtonStyle {
                 Capsule()
                     .strokeBorder(Color(nsColor: .linkColor), lineWidth: 1)
             )
-            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+            .animation(.easeOut(duration: 0.1), value: isPressed)
             .animation(.easeInOut(duration: 0.1), value: isHovered)
             .onHover { hovering in
                 isHovered = hovering
             }
+    }
+}
+
+private struct PrimaryButton: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        PrimaryButtonLabel(label: configuration.label, isPressed: configuration.isPressed)
     }
 }
 
