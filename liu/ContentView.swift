@@ -36,13 +36,13 @@ struct ContentView: View {
                     if index < tossCount {
                         lineView(yang: lines[index].yang)
                             .id(lines[index].id)
-                            .transition(.scale(scale: 0.75, anchor: .center).combined(with: .opacity))
+                            .transition(.push(from: .bottom).combined(with: .opacity))
                     } else {
                         linePlaceholder()
                     }
                 }
             }
-            .animation(.snappy(duration: Constants.animationDuration, extraBounce: 0.25), value: tossCount)
+            .animation(.snappy(duration: Constants.animationDuration, extraBounce: 0.45), value: tossCount)
             .padding([.top, .bottom], Constants.hexagramTopBottomPadding)
             
             Divider()
@@ -154,7 +154,7 @@ private extension ContentView {
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
-                Text("Menu Bar Yì Jīng App")
+                Text("Menu Bar Yì Jīng Oracle")
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
                 Button("About Liù") {
