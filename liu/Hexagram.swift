@@ -15,7 +15,7 @@ struct Hexagram: Identifiable {
     let lines: [Bool] // true = solid (yang ⚊), false = broken (yin ⚋), bottom to top
 
     var searchQuery: String {
-        "I Ching hexagram \(id) \(name)"
+        "i ching hexagram \(id) interpretation"
     }
 
     var searchURL: URL? {
