@@ -162,7 +162,7 @@ private extension ContentView {
                     }
                     .buttonStyle(.link)
                     .font(Constants.monospacedRegularFont)
-                    .padding(.trailing, -3.5)
+                    .padding(.trailing, -1.5)
                     .padding(.top, Constants.lookupButtonTopPadding)
                 }
             } else {
@@ -263,7 +263,7 @@ fileprivate enum Constants {
     static let restartLineDelay: TimeInterval = 0.045
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
-    static let cornerRadius: CGFloat = 2
+    static let cornerRadius: CGFloat = 3
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
     static let horizontalLinePadding: CGFloat = 20
