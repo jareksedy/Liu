@@ -112,16 +112,17 @@ private extension ContentView {
     }
     
     private func playSound(_ soundEffect: SoundEffect) {
-        let rate: Float = soundEffect == .toss ? .random(in: 0.8...1.2) : 1.0
-        let volume: Float = soundEffect == .toss ? .random(in: 0.4...1.0) : 1.0
-        let pan: Float = soundEffect == .toss ? .random(in: -1.0...1.0) : 0.0
         SoundEffect.playQueue.async {
             guard let data = SoundEffect.cache[soundEffect],
                   let player = try? AVAudioPlayer(data: data) else { return }
-            player.enableRate = true
-            player.rate = rate
-            player.volume = volume
-            player.pan = pan
+            if soundEffect == .toss {
+                player.enableRate = true
+                player.rate = .random(in: 0.8...1.4)
+                player.volume = .random(in: 0.2...0.8)
+                player.pan = .random(in: -1.0...1.0)
+            } else {
+                player.volume = 0.8
+            }
             SoundEffect.activePlayers.removeAll { !$0.isPlaying }
             SoundEffect.activePlayers.append(player)
             player.play()
