@@ -11,7 +11,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var lines: [Bool] = []
     @State private var result: Hexagram?
-    @State private var audioPlayer: AVAudioPlayer?
+    @State private var audioPlayers: [AVAudioPlayer] = []
     
     private var tossCount: Int { lines.count }
     private var isComplete: Bool { tossCount == 6 }
@@ -76,17 +76,28 @@ private extension ContentView {
         let yang = Bool.yijingCoinsToss()
         lines.append(yang)
         
-        playSound(isComplete ? .cast : .toss)
+        playSound(.toss)
         
         if isComplete {
             result = HexagramLibrary.find(lines: lines)
+            playSound(.cast)
         }
     }
     
     private func playSound(_ soundEffect: SoundEffect) {
-        guard let url = soundEffect.url else { return }
-        audioPlayer = try? AVAudioPlayer(contentsOf: url)
-        audioPlayer?.play()
+        guard let url = soundEffect.url,
+              let player = try? AVAudioPlayer(contentsOf: url) else {
+            return
+        }
+        if soundEffect == .toss {
+            player.enableRate = true
+            player.rate = Float.random(in: 0.8...1.2)
+            player.volume = Float.random(in: 0.4...1.0)
+            player.pan = Float.random(in: -1.0...1.0)
+        }
+        audioPlayers.removeAll { !$0.isPlaying }
+        audioPlayers.append(player)
+        player.play()
     }
     
     private func resultView(result: Hexagram?) -> some View {
@@ -160,14 +171,6 @@ private extension ContentView {
 
 private struct PrimaryButton: ButtonStyle {
     @State private var isHovered = false
-    
-    private func getBackground(isPressed: Bool) -> Color {
-        if isHovered {
-            Color(nsColor: .linkColor).opacity(0.1) //.opacity(isPressed ? 0.1 : 0.075)
-        } else {
-            .clear
-        }
-    }
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -175,7 +178,7 @@ private struct PrimaryButton: ButtonStyle {
             .foregroundStyle(Color(nsColor: .linkColor))
             .padding(9)
             .frame(maxWidth: .infinity)
-            .background(getBackground(isPressed: configuration.isPressed))
+            .background(isHovered ? Color(nsColor: .linkColor).opacity(0.1) : .clear)
             .clipShape(Capsule())
             .overlay(
                 Capsule()
@@ -225,11 +228,11 @@ enum SoundEffect {
     var url: URL? {
         switch self {
         case .toss:
-            return Bundle.main.url(forResource: "coin-flip-\(Int.random(in: 1...3))", withExtension: "mp3")
+            return Bundle.main.url(forResource: "coin-toss", withExtension: "mp3")
         case .cast:
-            return Bundle.main.url(forResource: "guzheng-2", withExtension: "mp3")
-        case .restart:
             return Bundle.main.url(forResource: "guzheng-1", withExtension: "mp3")
+        case .restart:
+            return Bundle.main.url(forResource: "guzheng-2", withExtension: "mp3")
         }
     }
 }
