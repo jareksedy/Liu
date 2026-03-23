@@ -108,6 +108,7 @@ private extension ContentView {
     private func restart() {
         isRestarting = true
         playSound(.restart)
+        playSound(.drop)
         
         withAnimation(.easeInOut(duration: Constants.animationDuration * 1.25)) {
             result = nil
@@ -163,6 +164,7 @@ private extension ContentView {
                     .buttonStyle(.link)
                     .font(Constants.monospacedRegularFont)
                     .padding(.top, Constants.lookupButtonTopPadding)
+                    .padding(.leading, 3)
                 }
             } else {
                 Text("Liù")
@@ -254,7 +256,7 @@ extension Bool {
 fileprivate enum Constants {
     static let lookupButtonTopPadding: CGFloat = 5
     static let characterTopPadding: CGFloat = 18
-    static let characterBottomPadding: CGFloat = 16
+    static let characterBottomPadding: CGFloat = 18
     static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
     static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
     static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
@@ -275,6 +277,7 @@ fileprivate enum Constants {
 nonisolated enum SoundEffect: CaseIterable, Hashable, Sendable {
     case toss
     case cast
+    case drop
     case restart
     
     static let playQueue = DispatchQueue(label: "liu.sound", qos: .userInitiated)
@@ -295,9 +298,11 @@ nonisolated enum SoundEffect: CaseIterable, Hashable, Sendable {
         case .toss:
             return Bundle.main.url(forResource: "coin-toss", withExtension: "mp3")
         case .cast:
-            return Bundle.main.url(forResource: "guzheng-1", withExtension: "mp3")
+            return Bundle.main.url(forResource: "guzheng-3", withExtension: "mp3")
+        case .drop:
+            return Bundle.main.url(forResource: "coins-drop", withExtension: "mp3")
         case .restart:
-            return Bundle.main.url(forResource: "guzheng-2", withExtension: "mp3")
+            return Bundle.main.url(forResource: "guzheng-1", withExtension: "mp3")
         }
     }
 }
