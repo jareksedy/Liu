@@ -136,7 +136,7 @@ private extension ContentView {
                 player.volume = .random(in: 0.2...0.8)
                 player.pan = .random(in: -1.0...1.0)
             } else {
-                player.volume = 0.35
+                player.volume = 0.6
             }
             SoundEffect.activePlayers.removeAll { !$0.isPlaying }
             SoundEffect.activePlayers.append(player)
@@ -172,7 +172,7 @@ private extension ContentView {
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
-                Text("Menu Bar Yì Jīng Oracle")
+                Text("Menu Bar I Ching Oracle")
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
                 Button("About Liù") {
