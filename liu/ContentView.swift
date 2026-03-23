@@ -133,7 +133,7 @@ private extension ContentView {
             if soundEffect == .toss {
                 player.enableRate = true
                 player.rate = .random(in: 0.8...1.4)
-                player.volume = .random(in: 0.2...0.8)
+                player.volume = .random(in: 0.3...0.6)
                 player.pan = .random(in: -1.0...1.0)
             } else {
                 player.volume = 0.6
@@ -162,7 +162,6 @@ private extension ContentView {
                     }
                     .buttonStyle(.link)
                     .font(Constants.monospacedRegularFont)
-                    .padding(.trailing, -1.5)
                     .padding(.top, Constants.lookupButtonTopPadding)
                 }
             } else {
@@ -263,7 +262,7 @@ fileprivate enum Constants {
     static let restartLineDelay: TimeInterval = 0.045
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
-    static let cornerRadius: CGFloat = 3
+    static let cornerRadius: CGFloat = 2
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
     static let horizontalLinePadding: CGFloat = 20
