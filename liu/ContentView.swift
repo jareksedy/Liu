@@ -107,8 +107,8 @@ private extension ContentView {
     
     private func restart() {
         isRestarting = true
-        playSound(.restart)
         playSound(.drop)
+        playSound(.restart)
         
         withAnimation(.easeInOut(duration: Constants.animationDuration * 1.25)) {
             result = nil
