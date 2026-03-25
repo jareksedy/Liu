@@ -10,38 +10,114 @@ import SwiftUI
 
 struct Line: Identifiable {
     let id = UUID()
-    let yang: Bool
+    let value: Int // 6 = old yin, 7 = young yang, 8 = young yin, 9 = old yang
+
+    var isYang: Bool { value == 7 || value == 9 }
+    var isChanging: Bool { value == 6 || value == 9 }
+}
+
+enum Trigram {
+    case heaven, earth, thunder, water, mountain, wind, fire, lake
+
+    var chinese: String {
+        switch self {
+        case .heaven:   "天"
+        case .earth:    "地"
+        case .thunder:  "雷"
+        case .water:    "水"
+        case .mountain: "山"
+        case .wind:     "风"
+        case .fire:     "火"
+        case .lake:     "泽"
+        }
+    }
+
+    /// Lookup by three lines (bottom to top), true = yang.
+    static func find(_ lines: [Bool]) -> Trigram? {
+        switch lines {
+        case [true, true, true]:    .heaven
+        case [false, false, false]: .earth
+        case [true, false, false]:  .thunder
+        case [false, true, false]:  .water
+        case [false, false, true]:  .mountain
+        case [false, true, true]:   .wind
+        case [true, false, true]:   .fire
+        case [true, true, false]:   .lake
+        default: nil
+        }
+    }
 }
 
 struct ContentView: View {
     @State private var lines: [Line] = []
     @State private var result: Hexagram?
+    @State private var relatingResult: Hexagram?
     @State private var isRestarting = false
     
     private var tossCount: Int { lines.count }
     private var isComplete: Bool { tossCount == 6 }
     
+    private var lowerTrigram: Trigram? {
+        guard tossCount >= 3 else { return nil }
+        return Trigram.find(lines[0..<3].map(\.isYang))
+    }
+    
+    private var upperTrigram: Trigram? {
+        guard tossCount >= 6 else { return nil }
+        return Trigram.find(lines[3..<6].map(\.isYang))
+    }
+    
     var body: some View {
         VStack(spacing: 12) {
-            resultView(result: result)
+            resultView(result: result, relatingResult: relatingResult)
                 .animation(.easeInOut(duration: Constants.animationDuration * 1.75), value: result == nil)
                 .padding(.bottom, 6)
             
             Divider()
             
             // Hexagram display — lines appear bottom-to-top
-            VStack(spacing: Constants.lineSpacing) {
-                ForEach((0..<6).reversed(), id: \.self) { index in
-                    if index < tossCount {
-                        lineView(yang: lines[index].yang)
-                            .id(lines[index].id)
-                            .transition(.push(from: .bottom).combined(with: .opacity))
-                    } else {
-                        linePlaceholder()
+            HStack(spacing: 4) {
+                // Numbers on the left
+                VStack(spacing: Constants.lineSpacing) {
+                    ForEach((0..<6).reversed(), id: \.self) { index in
+                        LineNumberLabel(index: index, isTossed: index < tossCount, isChanging: index < tossCount && lines[index].isChanging)
+                    }
+                }
+                
+                // Lines
+                VStack(spacing: Constants.lineSpacing) {
+                    ForEach((0..<6).reversed(), id: \.self) { index in
+                        if index < tossCount {
+                            lineView(line: lines[index])
+                                .id(lines[index].id)
+                                .transition(.push(from: .bottom).combined(with: .opacity))
+                        } else {
+                            linePlaceholder()
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .animation(.snappy(duration: Constants.animationDuration, extraBounce: 0.45), value: tossCount)
+                
+                // Trigram names on the right
+                VStack(spacing: Constants.lineSpacing) {
+                    ForEach((0..<6).reversed(), id: \.self) { index in
+                        if index == 2 || index == 5 {
+                            let label = trigramLabel(for: index)
+                            let isRevealed = label != " "
+                            Text(label)
+                                .font(Constants.monospacedRegularSmallFont)
+                                .foregroundStyle(isRevealed ? Color(nsColor: .labelColor) : Color(nsColor: .quaternaryLabelColor))
+                                .frame(width: Constants.lineLabelWidth, height: Constants.lineHeight, alignment: .center)
+                                .contentTransition(.numericText())
+                                .animation(.snappy(duration: Constants.animationDuration), value: label)
+                        } else {
+                            Color.clear
+                                .frame(width: Constants.lineLabelWidth, height: Constants.lineHeight)
+                        }
                     }
                 }
             }
-            .animation(.snappy(duration: Constants.animationDuration, extraBounce: 0.45), value: tossCount)
             .padding([.top, .bottom], Constants.hexagramTopBottomPadding)
             
             Divider()
@@ -67,7 +143,7 @@ struct ContentView: View {
                 }
                 .keyboardShortcut(.return, modifiers: [])
                 .buttonStyle(PrimaryButton())
-                .padding(.horizontal, Constants.horizontalLinePadding - 4)
+                .padding(.horizontal, Constants.horizontalLinePadding)
                 .padding(.top, 6)
                 
                 Button("Quit") {
@@ -86,6 +162,17 @@ struct ContentView: View {
 }
 
 private extension ContentView {
+    // MARK: - Helpers
+    private func trigramLabel(for index: Int) -> String {
+        if index == 2, let trigram = lowerTrigram {
+            return trigram.chinese
+        }
+        if index == 5, let trigram = upperTrigram {
+            return trigram.chinese
+        }
+        return " "
+    }
+    
     // MARK: - Actions
     private func toss() {
         guard !isRestarting else { return }
@@ -94,13 +181,20 @@ private extension ContentView {
             return
         }
         
-        let yang = Bool.yijingCoinsToss()
-        lines.append(Line(yang: yang))
+        let value = Int.yijingCoinsToss()
+        lines.append(Line(value: value))
         
         playSound(.toss)
         
         if isComplete {
-            result = HexagramLibrary.find(lines: lines.map(\.yang))
+            result = HexagramLibrary.find(lines: lines.map(\.isYang))
+            
+            let hasChangingLines = lines.contains { $0.isChanging }
+            if hasChangingLines {
+                let relatingLines = lines.map { $0.isChanging ? !$0.isYang : $0.isYang }
+                relatingResult = HexagramLibrary.find(lines: relatingLines)
+            }
+            
             playSound(.cast)
         }
     }
@@ -112,6 +206,7 @@ private extension ContentView {
         
         withAnimation(.easeInOut(duration: Constants.animationDuration * 1.25)) {
             result = nil
+            relatingResult = nil
         }
         
         let count = lines.count
@@ -145,11 +240,16 @@ private extension ContentView {
         }
     }
     
-    private func resultView(result: Hexagram?) -> some View {
+    private func resultView(result: Hexagram?, relatingResult: Hexagram?) -> some View {
         VStack(spacing: 8) {
             if let result {
-                Text("\(result.id). \(result.pinyin)")
-                    .font(Constants.monospacedBoldFont)
+                if let relatingResult {
+                    Text("\(result.id). \(result.pinyin) → \(relatingResult.id). \(relatingResult.pinyin)")
+                        .font(Constants.monospacedBoldFont)
+                } else {
+                    Text("\(result.id). \(result.pinyin)")
+                        .font(Constants.monospacedBoldFont)
+                }
                 Text(result.chinese)
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
@@ -187,23 +287,25 @@ private extension ContentView {
     }
     
     // MARK: - Line drawing
-    private func lineView(yang: Bool) -> some View {
-        HStack(spacing: yang ? 0 : Constants.yinPadding) {
-            if yang {
-                RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                    .frame(height: Constants.lineHeight)
-                    .foregroundStyle(Color(nsColor: .labelColor))
-            } else {
-                RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                    .frame(height: Constants.lineHeight)
-                    .foregroundStyle(Color(nsColor: .labelColor))
-                RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                    .frame(height: Constants.lineHeight)
-                    .foregroundStyle(Color(nsColor: .labelColor))
+    private func lineView(line: Line) -> some View {
+        ChangingLineColor(isChanging: line.isChanging) { color in
+            HStack(spacing: line.isYang ? 0 : Constants.yinPadding) {
+                if line.isYang {
+                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                        .frame(height: Constants.lineHeight)
+                        .foregroundStyle(color)
+                } else {
+                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                        .frame(height: Constants.lineHeight)
+                        .foregroundStyle(color)
+                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                        .frame(height: Constants.lineHeight)
+                        .foregroundStyle(color)
+                }
             }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, Constants.horizontalLinePadding)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, Constants.horizontalLinePadding)
     }
     
     private func linePlaceholder() -> some View {
@@ -211,6 +313,50 @@ private extension ContentView {
             .frame(height: Constants.lineHeight)
             .foregroundStyle(.quaternary)
             .padding(.horizontal, Constants.horizontalLinePadding)
+    }
+}
+
+private struct ChangingLineColor<Content: View>: View {
+    let isChanging: Bool
+    @ViewBuilder let content: (Color) -> Content
+    @State private var highlighted = false
+
+    var body: some View {
+        content(highlighted ? Color(nsColor: .linkColor) : Color(nsColor: .labelColor))
+            .animation(
+                .easeInOut(duration: Constants.animationDuration)
+                    .delay(Constants.changingLineColorDelay),
+                value: highlighted
+            )
+            .onAppear {
+                if isChanging { highlighted = true }
+            }
+            .onDisappear { highlighted = false }
+    }
+}
+
+private struct LineNumberLabel: View {
+    let index: Int
+    let isTossed: Bool
+    let isChanging: Bool
+
+    private var color: Color {
+        if isChanging { return Color(nsColor: .linkColor) }
+        if isTossed { return Color(nsColor: .labelColor) }
+        return Color(nsColor: .quaternaryLabelColor)
+    }
+
+    var body: some View {
+        Text("\(index + 1)")
+            .font(Constants.monospacedRegularSmallFont)
+            .foregroundStyle(color)
+            .frame(width: Constants.lineLabelWidth, height: Constants.lineHeight)
+            .animation(
+                .easeInOut(duration: Constants.animationDuration)
+                    .delay(Constants.changingLineColorDelay),
+                value: isChanging
+            )
+            .animation(.easeInOut(duration: Constants.animationDuration), value: isTossed)
     }
 }
 
@@ -245,11 +391,13 @@ private struct PrimaryButton: ButtonStyle {
     }
 }
 
-extension Bool {
-    static func yijingCoinsToss() -> Bool {
-        (Bool.random() ? 1 : 0) +
-        (Bool.random() ? 1 : 0) +
-        (Bool.random() ? 1 : 0) >= 2
+extension Int {
+    /// Three-coin method: each coin is heads (3) or tails (2).
+    /// Sum produces 6 (old yin), 7 (young yang), 8 (young yin), or 9 (old yang).
+    static func yijingCoinsToss() -> Int {
+        (Bool.random() ? 3 : 2) +
+        (Bool.random() ? 3 : 2) +
+        (Bool.random() ? 3 : 2)
     }
 }
 
@@ -260,6 +408,7 @@ fileprivate enum Constants {
     static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
     static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
     static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
+    static let monospacedRegularSmallFont: Font = .system(size: 8, weight: .regular, design: .monospaced)
     static let animationDuration: TimeInterval = 0.25
     static let restartLineDelay: TimeInterval = 0.045
     static let hexagramTopBottomPadding: CGFloat = 10
@@ -267,7 +416,10 @@ fileprivate enum Constants {
     static let cornerRadius: CGFloat = 2
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
-    static let horizontalLinePadding: CGFloat = 20
+    static let horizontalLinePadding: CGFloat = 2.5
+    static let lineNumberLeading: CGFloat = 0
+    static let lineLabelWidth: CGFloat = 14
+    static let changingLineColorDelay: TimeInterval = 0.05
 }
 
 #Preview {
