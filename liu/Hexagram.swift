@@ -13,12 +13,16 @@ struct Hexagram: Identifiable {
     let name: String
     let chinese: String
     let lines: [Bool] // true = solid (yang ⚊), false = broken (yin ⚋), bottom to top
-
-    var searchQuery: String {
-        "i ching hexagram \(id) interpretation"
-    }
-
-    var searchURL: URL? {
+    
+    func  getSearchURL(relatingResult: Hexagram?) -> URL? {
+        var searchQuery: String
+        
+        if let relatingResult {
+            searchQuery = "i ching hexagram \(id) changing to \(relatingResult.id) interpretation"
+        } else {
+            searchQuery = "i ching hexagram \(id) interpretation"
+        }
+        
         var components = URLComponents(string: "https://www.google.com/search")
         components?.queryItems = [URLQueryItem(name: "q", value: searchQuery)]
         return components?.url

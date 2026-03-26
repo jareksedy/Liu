@@ -21,14 +21,14 @@ enum Trigram {
 
     var chinese: String {
         switch self {
-        case .heaven:   "天"
-        case .earth:    "地"
-        case .thunder:  "雷"
-        case .water:    "水"
+        case .heaven: "天"
+        case .earth: "地"
+        case .thunder: "雷"
+        case .water: "水"
         case .mountain: "山"
-        case .wind:     "风"
-        case .fire:     "火"
-        case .lake:     "泽"
+        case .wind: "风"
+        case .fire: "火"
+        case .lake: "泽"
         }
     }
 
@@ -97,7 +97,7 @@ struct ContentView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .animation(.snappy(duration: Constants.animationDuration, extraBounce: 0.45), value: tossCount)
+                .animation(.snappy(duration: Constants.animationDuration, extraBounce: 0.35), value: tossCount)
                 
                 // Trigram names on the right
                 VStack(spacing: Constants.lineSpacing) {
@@ -163,6 +163,17 @@ struct ContentView: View {
 
 private extension ContentView {
     // MARK: - Helpers
+    private func resultHeader(result: Hexagram, relatingResult: Hexagram?) -> String {
+        guard let relatingResult else {
+            return "\(result.id)"
+        }
+        let changingIndices = lines.enumerated()
+            .filter { $0.element.isChanging }
+            .map { "\($0.offset + 1)" }
+        let changingPart = changingIndices.joined(separator: ".")
+        return "\(result.id).\(changingPart) → \(relatingResult.id)"
+    }
+    
     private func trigramLabel(for index: Int) -> String {
         if index == 2, let trigram = lowerTrigram {
             return trigram.chinese
@@ -241,24 +252,24 @@ private extension ContentView {
     }
     
     private func resultView(result: Hexagram?, relatingResult: Hexagram?) -> some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 5) {
             if let result {
-                if let relatingResult {
-                    Text("\(result.id). \(result.pinyin) → \(relatingResult.id). \(relatingResult.pinyin)")
-                        .font(Constants.monospacedBoldFont)
-                } else {
-                    Text("\(result.id). \(result.pinyin)")
-                        .font(Constants.monospacedBoldFont)
-                }
+                Text(resultHeader(result: result, relatingResult: relatingResult))
+                    .font(Constants.monospacedBoldFont)
                 Text(result.chinese)
-                    .font(Constants.chineseCharacterFont)
+                    .font(Constants.monospacedRegularLargeFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
-                Text("\(result.name)")
+                
+                Text("\(result.pinyin)")
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
-                if let url = result.searchURL {
-                    Button("Look It Up →") {
+                Text(result.name)
+                    .font(Constants.monospacedBoldFont)
+                    .multilineTextAlignment(.center)
+                
+                if let url = result.getSearchURL(relatingResult: relatingResult) {
+                    Button("Look It Up") {
                         NSWorkspace.shared.open(url)
                     }
                     .buttonStyle(.link)
@@ -270,10 +281,13 @@ private extension ContentView {
                 Text("Liù")
                     .font(Constants.monospacedBoldFont)
                 Text("六")
-                    .font(Constants.chineseCharacterFont)
+                    .font(Constants.monospacedRegularLargeFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
-                Text("Menu Bar I Ching Oracle")
+                Text("Menu Bar")
+                    .font(Constants.monospacedBoldFont)
+                    .multilineTextAlignment(.center)
+                Text("I Ching Oracle")
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
                 Button("About Liù") {
@@ -402,13 +416,14 @@ extension Int {
 }
 
 fileprivate enum Constants {
-    static let lookupButtonTopPadding: CGFloat = 5
-    static let characterTopPadding: CGFloat = 18
-    static let characterBottomPadding: CGFloat = 18
+    static let lookupButtonTopPadding: CGFloat = 15
+    static let characterTopPadding: CGFloat = 12
+    static let characterBottomPadding: CGFloat = 12
     static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
     static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
     static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
     static let monospacedRegularSmallFont: Font = .system(size: 8, weight: .regular, design: .monospaced)
+    static let monospacedRegularLargeFont: Font = .system(size: 48, weight: .ultraLight, design: .monospaced)
     static let animationDuration: TimeInterval = 0.25
     static let restartLineDelay: TimeInterval = 0.045
     static let hexagramTopBottomPadding: CGFloat = 10
