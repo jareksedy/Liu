@@ -13,6 +13,10 @@ struct Hexagram: Identifiable {
     let name: String
     let chinese: String
     let lines: [Bool] // true = solid (yang ⚊), false = broken (yin ⚋), bottom to top
+
+    var symbol: String {
+        String(UnicodeScalar(0x4DC0 + id - 1)!)
+    }
     
     func  getSearchURL(relatingResult: Hexagram?) -> URL? {
         var searchQuery: String

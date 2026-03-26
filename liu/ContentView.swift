@@ -257,7 +257,7 @@ private extension ContentView {
                 Text(resultHeader(result: result, relatingResult: relatingResult))
                     .font(Constants.monospacedBoldFont)
                 Text(result.chinese)
-                    .font(Constants.monospacedRegularLargeFont)
+                    .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
                 
@@ -268,20 +268,20 @@ private extension ContentView {
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
                 
-                if let url = result.getSearchURL(relatingResult: relatingResult) {
-                    Button("Look It Up") {
-                        NSWorkspace.shared.open(url)
-                    }
-                    .buttonStyle(.link)
-                    .font(Constants.monospacedRegularFont)
-                    .padding(.top, Constants.lookupButtonTopPadding)
-                    .padding(.leading, 3)
-                }
+//                if let url = result.getSearchURL(relatingResult: relatingResult) {
+//                    Button("Look It Up") {
+//                        NSWorkspace.shared.open(url)
+//                    }
+//                    .buttonStyle(.link)
+//                    .font(Constants.monospacedRegularFont)
+//                    .padding(.top, Constants.lookupButtonTopPadding)
+//                    .padding(.leading, 3)
+//                }
             } else {
                 Text("Liù")
                     .font(Constants.monospacedBoldFont)
                 Text("六")
-                    .font(Constants.monospacedRegularLargeFont)
+                    .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
                 Text("Menu Bar")
@@ -290,12 +290,13 @@ private extension ContentView {
                 Text("I Ching Oracle")
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
-                Button("About Liù") {
-                    NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
-                }
-                .buttonStyle(.link)
-                .font(Constants.monospacedRegularFont)
-                .padding(.top, Constants.lookupButtonTopPadding)
+                
+//                Button("About Liù") {
+//                    NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
+//                }
+//                .buttonStyle(.link)
+//                .font(Constants.monospacedRegularFont)
+//                .padding(.top, Constants.lookupButtonTopPadding)
             }
         }
     }
@@ -417,9 +418,9 @@ extension Int {
 
 fileprivate enum Constants {
     static let lookupButtonTopPadding: CGFloat = 15
-    static let characterTopPadding: CGFloat = 12
+    static let characterTopPadding: CGFloat = 16
     static let characterBottomPadding: CGFloat = 12
-    static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 72)
+    static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 64)
     static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
     static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
     static let monospacedRegularSmallFont: Font = .system(size: 8, weight: .regular, design: .monospaced)
