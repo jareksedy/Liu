@@ -254,16 +254,12 @@ private extension ContentView {
     private func resultView(result: Hexagram?, relatingResult: Hexagram?) -> some View {
         VStack(spacing: 5) {
             if let result {
-                Text(resultHeader(result: result, relatingResult: relatingResult))
+                Text("\(result.id). \(result.pinyin)")
                     .font(Constants.monospacedBoldFont)
                 Text(result.chinese)
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
-                
-                Text("\(result.pinyin)")
-                    .font(Constants.monospacedBoldFont)
-                    .multilineTextAlignment(.center)
                 Text(result.name)
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
@@ -284,10 +280,7 @@ private extension ContentView {
                     .font(Constants.chineseCharacterFont)
                     .padding(.top, Constants.characterTopPadding)
                     .padding(.bottom, Constants.characterBottomPadding)
-                Text("Menu Bar")
-                    .font(Constants.monospacedBoldFont)
-                    .multilineTextAlignment(.center)
-                Text("I Ching Oracle")
+                Text("Menu Bar I Ching Oracle")
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
                 
@@ -417,10 +410,10 @@ extension Int {
 }
 
 fileprivate enum Constants {
-    static let lookupButtonTopPadding: CGFloat = 15
-    static let characterTopPadding: CGFloat = 16
-    static let characterBottomPadding: CGFloat = 12
-    static let chineseCharacterFont: Font = .custom("WenYue_GuTiFangSong_F", size: 64)
+    static let lookupButtonTopPadding: CGFloat = 10
+    static let characterTopPadding: CGFloat = 14
+    static let characterBottomPadding: CGFloat = 14
+    static let chineseCharacterFont: Font = .custom("851tegakizatsu", size: 72)
     static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
     static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
     static let monospacedRegularSmallFont: Font = .system(size: 8, weight: .regular, design: .monospaced)
@@ -429,13 +422,13 @@ fileprivate enum Constants {
     static let restartLineDelay: TimeInterval = 0.045
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
-    static let cornerRadius: CGFloat = 2
+    static let cornerRadius: CGFloat = 3
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
     static let horizontalLinePadding: CGFloat = 2.5
     static let lineNumberLeading: CGFloat = 0
     static let lineLabelWidth: CGFloat = 14
-    static let changingLineColorDelay: TimeInterval = 0.05
+    static let changingLineColorDelay: TimeInterval = 0.1
 }
 
 #Preview {
