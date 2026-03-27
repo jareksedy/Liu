@@ -456,14 +456,10 @@ nonisolated enum SoundEffect: CaseIterable, Hashable, Sendable {
     
     var url: URL? {
         switch self {
-        case .toss:
-            return Bundle.main.url(forResource: "coin-toss", withExtension: "mp3")
-        case .cast:
-            return Bundle.main.url(forResource: "guzheng-3", withExtension: "mp3")
-        case .drop:
-            return Bundle.main.url(forResource: "coins-drop", withExtension: "mp3")
-        case .restart:
-            return Bundle.main.url(forResource: "guzheng-1", withExtension: "mp3")
+        case .toss: return Bundle.main.url(forResource: "coin-toss", withExtension: "mp3")
+        case .cast: return Bundle.main.url(forResource: "guzheng-3", withExtension: "mp3")
+        case .drop: return Bundle.main.url(forResource: "coins-drop", withExtension: "mp3")
+        case .restart: return Bundle.main.url(forResource: "guzheng-1", withExtension: "mp3")
         }
     }
 }
