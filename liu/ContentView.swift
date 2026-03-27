@@ -268,15 +268,15 @@ private extension ContentView {
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
                 
-//                if let url = result.getSearchURL(relatingResult: relatingResult) {
-//                    Button("Look It Up") {
-//                        NSWorkspace.shared.open(url)
-//                    }
-//                    .buttonStyle(.link)
-//                    .font(Constants.monospacedRegularFont)
-//                    .padding(.top, Constants.lookupButtonTopPadding)
-//                    .padding(.leading, 3)
-//                }
+                if let url = result.getSearchURL(relatingResult: relatingResult) {
+                    Button("Look It Up") {
+                        NSWorkspace.shared.open(url)
+                    }
+                    .buttonStyle(.link)
+                    .font(Constants.monospacedRegularFont)
+                    .padding(.top, Constants.lookupButtonTopPadding)
+                    .padding(.leading, 3)
+                }
             } else {
                 Text("Liù")
                     .font(Constants.monospacedBoldFont)
@@ -291,12 +291,12 @@ private extension ContentView {
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
                 
-//                Button("About Liù") {
-//                    NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
-//                }
-//                .buttonStyle(.link)
-//                .font(Constants.monospacedRegularFont)
-//                .padding(.top, Constants.lookupButtonTopPadding)
+                Button("About Liù") {
+                    NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
+                }
+                .buttonStyle(.link)
+                .font(Constants.monospacedRegularFont)
+                .padding(.top, Constants.lookupButtonTopPadding)
             }
         }
     }
