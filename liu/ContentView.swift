@@ -123,6 +123,15 @@ struct ContentView: View {
             Divider()
             
             VStack(spacing: 12) {
+                HStack {
+                    Button(action: {}) {
+                        Text("1       |       2")
+                    }
+                    .buttonStyle(PrimaryButton())
+                }
+                .padding(.top, 6)
+                .padding(.horizontal, Constants.horizontalLinePadding)
+                
                 Button(action: toss) {
                     Group {
                         if isComplete && !isRestarting {
@@ -144,7 +153,6 @@ struct ContentView: View {
                 .keyboardShortcut(.return, modifiers: [])
                 .buttonStyle(PrimaryButton())
                 .padding(.horizontal, Constants.horizontalLinePadding)
-                .padding(.top, 6)
                 
                 Button("Quit") {
                     NSApplication.shared.terminate(nil)
