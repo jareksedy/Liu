@@ -133,8 +133,9 @@ struct ContentView: View {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 12))
                     }
-                    .buttonStyle(PrimaryButton())
+                    .buttonStyle(PrimaryButton(isEnabled: result != nil))
                     .aspectRatio(1, contentMode: .fit)
+                    .disabled(result == nil)
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, Constants.horizontalLinePadding)
@@ -384,22 +385,28 @@ private struct LineNumberLabel: View {
 private struct PrimaryButtonLabel<Label: View>: View {
     let label: Label
     let isPressed: Bool
+    let isEnabled: Bool
     @State private var isHovered = false
+    
+    private var tint: Color {
+        Color(nsColor: .linkColor).opacity(isEnabled ? 1 : 0.3)
+    }
     
     var body: some View {
         label
             .font(Constants.monospacedRegularFont)
-            .foregroundStyle(Color(nsColor: .linkColor))
+            .foregroundStyle(tint)
             .padding(9)
             .frame(maxWidth: .infinity)
-            .background(isHovered ? Color(nsColor: .linkColor).opacity(0.1) : .clear)
+            .background(isEnabled && isHovered ? Color(nsColor: .linkColor).opacity(0.1) : .clear)
             .clipShape(Capsule())
             .overlay(
                 Capsule()
-                    .strokeBorder(Color(nsColor: .linkColor), lineWidth: 1)
+                    .strokeBorder(tint, lineWidth: 1)
             )
             .animation(.easeOut(duration: 0.1), value: isPressed)
             .animation(.easeInOut(duration: 0.1), value: isHovered)
+            .animation(.easeInOut(duration: Constants.animationDuration), value: isEnabled)
             .onHover { hovering in
                 isHovered = hovering
             }
@@ -407,8 +414,10 @@ private struct PrimaryButtonLabel<Label: View>: View {
 }
 
 private struct PrimaryButton: ButtonStyle {
+    var isEnabled: Bool = true
+    
     func makeBody(configuration: Configuration) -> some View {
-        PrimaryButtonLabel(label: configuration.label, isPressed: configuration.isPressed)
+        PrimaryButtonLabel(label: configuration.label, isPressed: configuration.isPressed, isEnabled: isEnabled)
     }
 }
 
