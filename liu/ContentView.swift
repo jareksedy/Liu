@@ -167,8 +167,9 @@ struct ContentView: View {
                 .buttonStyle(PrimaryButton())
                 .font(Constants.monospacedRegularFont)
                 .keyboardShortcut("q")
-                .padding(.bottom, 2.5)
             }
+            .padding(.top, 5)
+            .padding(.bottom, 2.5)
         }
         .padding()
         .frame(width: 220)
