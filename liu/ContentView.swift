@@ -124,13 +124,21 @@ struct ContentView: View {
             
             VStack(spacing: 12) {
                 HStack {
+                    PrimarySegmentedControl(
+                        selection: .constant(0),
+                        labels: ["←", "→"],
+                        isEnabled: relatingResult != nil
+                    )
                     Button(action: {}) {
-                        Text("1       |       2")
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 12))
                     }
                     .buttonStyle(PrimaryButton())
+                    .aspectRatio(1, contentMode: .fit)
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, Constants.horizontalLinePadding)
+
                 
                 Button(action: toss) {
                     Group {
@@ -401,6 +409,60 @@ private struct PrimaryButtonLabel<Label: View>: View {
 private struct PrimaryButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         PrimaryButtonLabel(label: configuration.label, isPressed: configuration.isPressed)
+    }
+}
+
+private struct PrimarySegmentedControl: View {
+    @Binding var selection: Int
+    let labels: [String]
+    var isEnabled: Bool = true
+    
+    @State private var hoveredIndex: Int? = nil
+    
+    private var tint: Color {
+        Color(nsColor: .linkColor).opacity(isEnabled ? 1 : 0.3)
+    }
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(labels.indices, id: \.self) { index in
+                let isSelected = selection == index
+                Text(labels[index])
+                    .font(Constants.monospacedRegularFont)
+                    .foregroundStyle(tint)
+                    .padding(9)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        isEnabled && isSelected
+                            ? Color(nsColor: .linkColor).opacity(0.15)
+                            : (isEnabled && hoveredIndex == index ? Color(nsColor: .linkColor).opacity(0.07) : .clear)
+                    )
+                    .contentShape(Rectangle())
+                    .onHover { hovering in
+                        guard isEnabled else { return }
+                        hoveredIndex = hovering ? index : nil
+                    }
+                    .onTapGesture {
+                        guard isEnabled else { return }
+                        selection = index
+                    }
+                
+                if index < labels.count - 1 {
+                    Rectangle()
+                        .fill(tint)
+                        .frame(width: 1)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .strokeBorder(tint, lineWidth: 1)
+        )
+        .animation(.easeInOut(duration: 0.1), value: selection)
+        .animation(.easeInOut(duration: 0.1), value: hoveredIndex)
+        .animation(.easeInOut(duration: Constants.animationDuration), value: isEnabled)
     }
 }
 
