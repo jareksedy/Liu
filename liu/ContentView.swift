@@ -128,7 +128,7 @@ struct ContentView: View {
                 .padding([.top, .bottom], Constants.hexagramTopBottomPadding)
             }
             .id("content-\(showingRelating)")
-            .transition(.move(edge: showingRelating ? .trailing : .leading))
+            .transition(.opacity)
             .animation(.snappy(duration: Constants.animationDuration * 1.5, extraBounce: 0.25), value: showingRelating)
             
             Divider()
@@ -202,13 +202,13 @@ private extension ContentView {
     // MARK: - Helpers
     private func resultHeader(result: Hexagram, relatingResult: Hexagram?) -> String {
         if showingRelating, let relatingResult {
-            return "\(relatingResult.id). \(relatingResult.pinyin)"
+            return "\(relatingResult.id). \(relatingResult.chinese) \(relatingResult.pinyin)"
         }
         let changingIndices = lines.enumerated()
             .filter { $0.element.isChanging }
             .map { "\($0.offset + 1)" }
         let changingPart = changingIndices.joined(separator: ".")
-        return "\(result.id).\(changingPart) \(result.pinyin)"
+        return "\(result.id).\(changingPart) \(result.chinese) \(result.pinyin)"
     }
     
     private func displayedYang(for index: Int) -> Bool {
@@ -322,33 +322,22 @@ private extension ContentView {
     }
     
     private func resultView(result: Hexagram?, relatingResult: Hexagram?) -> some View {
-        VStack(spacing: 5) {
+        VStack(alignment: .leading, spacing: 5) {
             if let result {
                 let displayed = showingRelating ? (relatingResult ?? result) : result
                 
-                Text(resultHeader(result: result, relatingResult: relatingResult))
+                Text("\(resultHeader(result: result, relatingResult: relatingResult))")
                     .font(Constants.monospacedBoldFont)
-                
-                Text(displayed.chinese)
-                    .font(Constants.chineseCharacterFont)
-                    .padding(.top, Constants.characterTopPadding)
-                    .padding(.bottom, Constants.characterBottomPadding)
-                
                 Text(displayed.name)
-                    .font(Constants.monospacedBoldFont)
-                    .multilineTextAlignment(.center)
+                    .font(Constants.monospacedRegularFont)
             } else {
-                Text("Liù")
+                Text("6. 六 Liù")
                     .font(Constants.monospacedBoldFont)
-                Text("六")
-                    .font(Constants.chineseCharacterFont)
-                    .padding(.top, Constants.characterTopPadding)
-                    .padding(.bottom, Constants.characterBottomPadding)
                 Text("Menu Bar I Ching Oracle")
-                    .font(Constants.monospacedBoldFont)
-                    .multilineTextAlignment(.center)
+                    .font(Constants.monospacedRegularFont)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     // MARK: - Line drawing
@@ -532,7 +521,7 @@ fileprivate enum Constants {
     static let cornerRadius: CGFloat = 3
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
-    static let horizontalLinePadding: CGFloat = 4
+    static let horizontalLinePadding: CGFloat = 0
     static let horizontalHexagramPadding: CGFloat = 0
     static let lineNumberLeading: CGFloat = 0
     static let lineLabelWidth: CGFloat = 14
