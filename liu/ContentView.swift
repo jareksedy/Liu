@@ -123,8 +123,8 @@ struct ContentView: View {
                 .padding([.top, .bottom], Constants.hexagramTopBottomPadding)
             }
             .id("content-\(showingRelating)")
-            .transition(.push(from: showingRelating ? .trailing : .leading))
-            .animation(.snappy(duration: Constants.animationDuration * 1.5), value: showingRelating)
+            .transition(.move(edge: showingRelating ? .trailing : .leading))
+            .animation(.snappy(duration: Constants.animationDuration * 1.5, extraBounce: 0.25), value: showingRelating)
             
             Divider()
             
@@ -149,7 +149,6 @@ struct ContentView: View {
                 }
                 .keyboardShortcut(.return, modifiers: [])
                 .buttonStyle(PrimaryButton())
-                .padding(.horizontal, Constants.horizontalLinePadding)
                 
                 HStack {
                     PrimarySegmentedControl(
@@ -333,50 +332,30 @@ private extension ContentView {
     
     // MARK: - Line drawing
     private func lineView(yang: Bool, isChanging: Bool) -> some View {
-        ChangingLineColor(isChanging: isChanging) { color in
-            HStack(spacing: yang ? 0 : Constants.yinPadding) {
-                if yang {
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .frame(height: Constants.lineHeight)
-                        .foregroundStyle(color)
-                } else {
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .frame(height: Constants.lineHeight)
-                        .foregroundStyle(color)
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .frame(height: Constants.lineHeight)
-                        .foregroundStyle(color)
-                }
+        let color: Color = isChanging ? Color(nsColor: .linkColor) : Color(nsColor: .labelColor)
+        return HStack(spacing: yang ? 0 : Constants.yinPadding) {
+            if yang {
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                    .frame(height: Constants.lineHeight)
+                    .foregroundStyle(color)
+            } else {
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                    .frame(height: Constants.lineHeight)
+                    .foregroundStyle(color)
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                    .frame(height: Constants.lineHeight)
+                    .foregroundStyle(color)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, Constants.horizontalLinePadding)
         }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, Constants.horizontalHexagramPadding)
     }
     
     private func linePlaceholder() -> some View {
         RoundedRectangle(cornerRadius: Constants.cornerRadius)
             .frame(height: Constants.lineHeight)
             .foregroundStyle(.quaternary)
-            .padding(.horizontal, Constants.horizontalLinePadding)
-    }
-}
-
-private struct ChangingLineColor<Content: View>: View {
-    let isChanging: Bool
-    @ViewBuilder let content: (Color) -> Content
-    @State private var highlighted = false
-
-    var body: some View {
-        content(highlighted ? Color(nsColor: .linkColor) : Color(nsColor: .labelColor))
-            .animation(
-                .easeInOut(duration: Constants.animationDuration)
-                    .delay(Constants.changingLineColorDelay),
-                value: highlighted
-            )
-            .onAppear {
-                if isChanging { highlighted = true }
-            }
-            .onDisappear { highlighted = false }
+            .padding(.horizontal, Constants.horizontalHexagramPadding)
     }
 }
 
@@ -524,7 +503,8 @@ fileprivate enum Constants {
     static let cornerRadius: CGFloat = 3
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
-    static let horizontalLinePadding: CGFloat = 2.5
+    static let horizontalLinePadding: CGFloat = 4
+    static let horizontalHexagramPadding: CGFloat = 0
     static let lineNumberLeading: CGFloat = 0
     static let lineLabelWidth: CGFloat = 14
     static let changingLineColorDelay: TimeInterval = 0.1
