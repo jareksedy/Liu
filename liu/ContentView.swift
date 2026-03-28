@@ -123,24 +123,6 @@ struct ContentView: View {
             Divider()
             
             VStack(spacing: 12) {
-                HStack {
-                    PrimarySegmentedControl(
-                        selection: .constant(0),
-                        labels: ["←", "→"],
-                        isEnabled: relatingResult != nil
-                    )
-                    Button(action: {}) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 12))
-                    }
-                    .buttonStyle(PrimaryButton(isEnabled: result != nil))
-                    .aspectRatio(1, contentMode: .fit)
-                    .disabled(result == nil)
-                }
-                .padding(.top, 6)
-                .padding(.horizontal, Constants.horizontalLinePadding)
-
-                
                 Button(action: toss) {
                     Group {
                         if isComplete && !isRestarting {
@@ -163,10 +145,26 @@ struct ContentView: View {
                 .buttonStyle(PrimaryButton())
                 .padding(.horizontal, Constants.horizontalLinePadding)
                 
+                HStack {
+                    PrimarySegmentedControl(
+                        selection: .constant(0),
+                        labels: ["←", "→"],
+                        isEnabled: relatingResult != nil
+                    )
+                    Button(action: lookUp) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 12))
+                    }
+                    .buttonStyle(PrimaryButton(isEnabled: result?.getSearchURL(relatingResult: relatingResult) != nil))
+                    .aspectRatio(1, contentMode: .fit)
+                    .disabled(result == nil)
+                }
+                .padding(.horizontal, Constants.horizontalLinePadding)
+                
                 Button("Quit") {
                     NSApplication.shared.terminate(nil)
                 }
-                .buttonStyle(.link)
+                .buttonStyle(PrimaryButton())
                 .font(Constants.monospacedRegularFont)
                 .keyboardShortcut("q")
                 .padding(.bottom, 2.5)
@@ -199,6 +197,13 @@ private extension ContentView {
     }
     
     // MARK: - Actions
+    private func lookUp() {
+        guard let url = result?.getSearchURL(relatingResult: relatingResult) else {
+            return
+        }
+        NSWorkspace.shared.open(url)
+    }
+    
     private func toss() {
         guard !isRestarting else { return }
         guard !isComplete else {
@@ -277,16 +282,6 @@ private extension ContentView {
                 Text(result.name)
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
-                
-                if let url = result.getSearchURL(relatingResult: relatingResult) {
-                    Button("Look It Up") {
-                        NSWorkspace.shared.open(url)
-                    }
-                    .buttonStyle(.link)
-                    .font(Constants.monospacedRegularFont)
-                    .padding(.top, Constants.lookupButtonTopPadding)
-                    .padding(.leading, 3)
-                }
             } else {
                 Text("Liù")
                     .font(Constants.monospacedBoldFont)
@@ -297,13 +292,6 @@ private extension ContentView {
                 Text("Menu Bar I Ching Oracle")
                     .font(Constants.monospacedBoldFont)
                     .multilineTextAlignment(.center)
-                
-                Button("About Liù") {
-                    NSWorkspace.shared.open(URL(string: "https://github.com/jareksedy/Liu")!)
-                }
-                .buttonStyle(.link)
-                .font(Constants.monospacedRegularFont)
-                .padding(.top, Constants.lookupButtonTopPadding)
             }
         }
     }
