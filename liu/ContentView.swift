@@ -104,7 +104,7 @@ struct ContentView: View {
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .animation(.snappy(duration: Constants.animationDuration, extraBounce: 0.35), value: tossCount)
+                    .animation(.snappy(duration: Constants.animationDuration, extraBounce: 0.25), value: tossCount)
                     
                     // Trigram names on the right
                     VStack(spacing: Constants.lineSpacing) {
