@@ -125,6 +125,7 @@ struct ContentView: View {
                         }
                     }
                 }
+                .padding(.horizontal, -Constants.hexagramNegativePadding)
                 .padding([.top, .bottom], Constants.hexagramTopBottomPadding)
             }
             .id("content-\(showingRelating)")
@@ -516,13 +517,14 @@ fileprivate enum Constants {
     static let monospacedRegularLargeFont: Font = .system(size: 48, weight: .ultraLight, design: .monospaced)
     static let animationDuration: TimeInterval = 0.25
     static let restartLineDelay: TimeInterval = 0.045
+    static let hexagramNegativePadding: CGFloat = 6
     static let hexagramTopBottomPadding: CGFloat = 10
     static let lineSpacing: CGFloat = 10
-    static let cornerRadius: CGFloat = 3
+    static let cornerRadius: CGFloat = 2
     static let yinPadding: CGFloat = 20
     static let lineHeight: CGFloat = 10
     static let horizontalLinePadding: CGFloat = 0
-    static let horizontalHexagramPadding: CGFloat = 0
+    static let horizontalHexagramPadding: CGFloat = 2.5
     static let lineNumberLeading: CGFloat = 0
     static let lineLabelWidth: CGFloat = 14
     static let changingLineColorDelay: TimeInterval = 0.1
