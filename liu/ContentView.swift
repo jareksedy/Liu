@@ -163,15 +163,12 @@ struct ContentView: View {
 
 private extension ContentView {
     // MARK: - Helpers
-    private func resultHeader(result: Hexagram, relatingResult: Hexagram?) -> String {
-        guard let relatingResult else {
-            return "\(result.id)"
-        }
+    private func resultHeader(from result: Hexagram) -> String {
         let changingIndices = lines.enumerated()
             .filter { $0.element.isChanging }
             .map { "\($0.offset + 1)" }
         let changingPart = changingIndices.joined(separator: ".")
-        return "\(result.id).\(changingPart) → \(relatingResult.id)"
+        return "\(result.id).\(changingPart) \(result.pinyin)"
     }
     
     private func trigramLabel(for index: Int) -> String {
@@ -254,7 +251,7 @@ private extension ContentView {
     private func resultView(result: Hexagram?, relatingResult: Hexagram?) -> some View {
         VStack(spacing: 5) {
             if let result {
-                Text("\(result.id). \(result.pinyin)")
+                Text(resultHeader(from: result))
                     .font(Constants.monospacedBoldFont)
                 Text(result.chinese)
                     .font(Constants.chineseCharacterFont)
