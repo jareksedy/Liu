@@ -35,14 +35,14 @@ enum Trigram {
     /// Lookup by three lines (bottom to top), true = yang.
     static func find(_ lines: [Bool]) -> Trigram? {
         switch lines {
-        case [true, true, true]:    .heaven
+        case [true, true, true]: .heaven
         case [false, false, false]: .earth
-        case [true, false, false]:  .thunder
-        case [false, true, false]:  .water
-        case [false, false, true]:  .mountain
-        case [false, true, true]:   .wind
-        case [true, false, true]:   .fire
-        case [true, true, false]:   .lake
+        case [true, false, false]: .thunder
+        case [false, true, false]: .water
+        case [false, false, true]: .mountain
+        case [false, true, true]: .wind
+        case [true, false, true]: .fire
+        case [true, true, false]: .lake
         default: nil
         }
     }
@@ -54,6 +54,7 @@ struct ContentView: View {
     @State private var relatingResult: Hexagram?
     @State private var isRestarting = false
     @State private var showingRelating = false
+    @State private var playSFX = false
     
     private var tossCount: Int { lines.count }
     private var isComplete: Bool { tossCount == 6 }
@@ -66,6 +67,10 @@ struct ContentView: View {
     private var upperTrigram: Trigram? {
         guard tossCount >= 6 else { return nil }
         return Trigram.find(lines[3..<6].map(\.isYang))
+    }
+    
+    init() {
+        self.playSFX = UserDefaults.standard.bool(forKey: Constants.playSFXKey)
     }
     
     var body: some View {
@@ -163,17 +168,25 @@ struct ContentView: View {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 12))
                     }
-                    .buttonStyle(PrimaryButton(isEnabled: result?.getSearchURL(relatingResult: relatingResult) != nil))
-                    .aspectRatio(1, contentMode: .fit)
+                    .buttonStyle(PrimaryButton(isEnabled: result?.getSearchURL(relatingResult: relatingResult) != nil, isSquare: true))
                     .disabled(result == nil)
                 }
                 
-                Button("Quit") {
-                    NSApplication.shared.terminate(nil)
+                HStack {
+                    Button(action: toggleSFX) {
+                        Image(systemName: playSFX ? "speaker.wave.2" : "speaker.slash")
+                            .contentTransition(.symbolEffect(.replace))
+                            .font(.system(size: 12))
+                    }
+                    .buttonStyle(PrimaryButton(isSquare: true))
+                    
+                    Button("Quit") {
+                        NSApplication.shared.terminate(nil)
+                    }
+                    .buttonStyle(PrimaryButton())
+                    .font(Constants.monospacedRegularFont)
+                    .keyboardShortcut("q")
                 }
-                .buttonStyle(PrimaryButton())
-                .font(Constants.monospacedRegularFont)
-                .keyboardShortcut("q")
             }
             .padding(.horizontal, Constants.horizontalLinePadding)
             .padding(.top, 5)
@@ -226,6 +239,11 @@ private extension ContentView {
     }
     
     // MARK: - Actions
+    private func toggleSFX() {
+        playSFX.toggle()
+        UserDefaults.standard.set(playSFX, forKey: Constants.playSFXKey)
+    }
+    
     private func lookUp() {
         guard let url = result?.getSearchURL(relatingResult: relatingResult) else {
             return
@@ -283,6 +301,9 @@ private extension ContentView {
     }
     
     private func playSound(_ soundEffect: SoundEffect) {
+        guard playSFX else {
+            return
+        }
         SoundEffect.playQueue.async {
             guard let data = SoundEffect.cache[soundEffect],
                   let player = try? AVAudioPlayer(data: data) else { return }
@@ -388,6 +409,7 @@ private struct PrimaryButtonLabel<Label: View>: View {
     let label: Label
     let isPressed: Bool
     let isEnabled: Bool
+    let isSquare: Bool
     @State private var isHovered = false
     
     private var tint: Color {
@@ -399,12 +421,18 @@ private struct PrimaryButtonLabel<Label: View>: View {
             .font(Constants.monospacedRegularFont)
             .foregroundStyle(tint)
             .padding(9)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: isSquare ? nil : .infinity)
+            .frame(width: isSquare ? 34 : nil, height: isSquare ? 34 : nil)
             .background(isEnabled && isHovered ? Color(nsColor: .linkColor).opacity(0.1) : .clear)
-            .clipShape(Capsule())
+            .clipShape(isSquare ? AnyShape(Circle()) : AnyShape(Capsule()))
             .overlay(
-                Capsule()
-                    .strokeBorder(tint, lineWidth: 1)
+                Group {
+                    if isSquare {
+                        Circle().strokeBorder(tint, lineWidth: 1)
+                    } else {
+                        Capsule().strokeBorder(tint, lineWidth: 1)
+                    }
+                }
             )
             .animation(.easeOut(duration: 0.1), value: isPressed)
             .animation(.easeInOut(duration: 0.1), value: isHovered)
@@ -417,9 +445,10 @@ private struct PrimaryButtonLabel<Label: View>: View {
 
 private struct PrimaryButton: ButtonStyle {
     var isEnabled: Bool = true
+    var isSquare: Bool = false
     
     func makeBody(configuration: Configuration) -> some View {
-        PrimaryButtonLabel(label: configuration.label, isPressed: configuration.isPressed, isEnabled: isEnabled)
+        PrimaryButtonLabel(label: configuration.label, isPressed: configuration.isPressed, isEnabled: isEnabled, isSquare: isSquare)
     }
 }
 
@@ -508,6 +537,7 @@ fileprivate enum Constants {
     static let lineNumberLeading: CGFloat = 0
     static let lineLabelWidth: CGFloat = 14
     static let changingLineColorDelay: TimeInterval = 0.1
+    static let playSFXKey: String = "playSFX"
 }
 
 #Preview {
