@@ -19,6 +19,19 @@ struct Line: Identifiable {
 enum Trigram {
     case heaven, earth, thunder, water, mountain, wind, fire, lake
 
+    var name: String {
+        switch self {
+        case .heaven: "Heaven"
+        case .earth: "Earth"
+        case .thunder: "Thunder"
+        case .water: "Water"
+        case .mountain: "Mountain"
+        case .wind: "Wind"
+        case .fire: "Fire"
+        case .lake: "Lake"
+        }
+    }
+
     var chinese: String {
         switch self {
         case .heaven: "天"
@@ -162,7 +175,7 @@ struct ContentView: View {
                             get: { showingRelating ? 1 : 0 },
                             set: { showingRelating = $0 == 1 }
                         ),
-                        labels: ["←", "→"],
+                        labels: [result?.chinese ?? "1", relatingResult?.chinese ?? "2"],
                         isEnabled: relatingResult != nil
                     )
                     Button(action: lookUp) {
@@ -323,7 +336,7 @@ private extension ContentView {
     }
     
     private func resultView(result: Hexagram?, relatingResult: Hexagram?) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
+        VStack(alignment: .leading, spacing: 6) {
             if let result {
                 let displayed = showingRelating ? (relatingResult ?? result) : result
                 
@@ -331,11 +344,19 @@ private extension ContentView {
                     .font(Constants.monospacedBoldFont)
                 Text(displayed.name)
                     .font(Constants.monospacedRegularFont)
+                Text("\(displayed.secondTrigramName) Over \(displayed.firstTrigramName)")
+                    .font(Constants.monospacedRegularFont)
+                    .foregroundStyle(.tertiary)
             } else {
-                Text("6. 六 Liù")
+                Text("六 Liù")
                     .font(Constants.monospacedBoldFont)
                 Text("Menu Bar I Ching Oracle")
                     .font(Constants.monospacedRegularFont)
+                Button(action: {}) {
+                    Text("About The App")
+                }
+                .font(Constants.monospacedRegularFont)
+                .buttonStyle(.link)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

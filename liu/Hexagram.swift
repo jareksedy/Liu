@@ -17,6 +17,22 @@ struct Hexagram: Identifiable {
     var symbol: String {
         String(UnicodeScalar(0x4DC0 + id - 1)!)
     }
+
+    var firstTrigramName: String {
+        Trigram.find(Array(lines[0..<3]))?.name ?? ""
+    }
+
+    var secondTrigramName: String {
+        Trigram.find(Array(lines[3..<6]))?.name ?? ""
+    }
+
+    var firstTrigramChinese: String {
+        Trigram.find(Array(lines[0..<3]))?.chinese ?? ""
+    }
+
+    var secondTrigramChinese: String {
+        Trigram.find(Array(lines[3..<6]))?.chinese ?? ""
+    }
     
     func  getSearchURL(relatingResult: Hexagram?) -> URL? {
         var searchQuery: String
