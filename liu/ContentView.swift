@@ -343,9 +343,9 @@ private extension ContentView {
                     .font(Constants.monospacedBoldFont)
                 Text(displayed.name)
                     .font(Constants.monospacedRegularFont)
-                Text("\(displayed.secondTrigramName) Over \(displayed.firstTrigramName)")
+                Text("\(displayed.secondTrigramName) Above \(displayed.firstTrigramName)")
                     .font(Constants.monospacedRegularFont)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.secondary)
             } else {
                 Text("六 Liù")
                     .font(Constants.monospacedBoldFont)
