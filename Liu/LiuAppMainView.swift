@@ -109,7 +109,7 @@ struct LiuAppMainView: View {
                             if index < tossCount {
                                 lineView(yang: displayedYang(for: index), isChanging: !showingRelating && lines[index].isChanging)
                                     .id(lines[index].id)
-                                    .transition(.push(from: .bottom).combined(with: .opacity))
+                                    .transition(.scale(scale: 0.75).combined(with: .opacity))
                             } else {
                                 linePlaceholder()
                             }
