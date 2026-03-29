@@ -128,7 +128,8 @@ struct LiuAppMainView: View {
                                     .font(Constants.monospacedRegularSmallFont)
                                     .foregroundStyle(isRevealed ? Color(nsColor: .labelColor) : Color(nsColor: .quaternaryLabelColor))
                                     .frame(width: Constants.lineLabelWidth, height: Constants.lineHeight, alignment: .center)
-                                    .contentTransition(.numericText())
+                                    .id(label)
+                                    .transition(.asymmetric(insertion: .push(from: .leading).combined(with: .opacity), removal: .push(from: .trailing).combined(with: .opacity)))
                                     .animation(.snappy(duration: Constants.animationDuration), value: label)
                             } else {
                                 Color.clear
