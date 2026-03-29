@@ -516,6 +516,7 @@ private struct PrimarySegmentedControl: View {
                     Rectangle()
                         .fill(tint)
                         .frame(width: 1)
+                        .padding(.vertical, 1)
                 }
             }
         }
