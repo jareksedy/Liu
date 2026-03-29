@@ -9,7 +9,7 @@ import AVFoundation
 import SwiftUI
 
 @main
-struct liuApp: App {
+struct LiuApp: App {
     @State private var warmupPlayer: AVAudioPlayer?
     
     init() {
@@ -27,7 +27,7 @@ struct liuApp: App {
     
     var body: some Scene {
         MenuBarExtra {
-            ContentView()
+            LiuAppMainView()
         } label: {
             Text("六")
         }

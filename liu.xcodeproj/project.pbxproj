@@ -7,26 +7,26 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		CAB376C22F48D6690007D7EA /* liu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = liu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CAB376C22F48D6690007D7EA /* Liu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Liu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		CAB376D12F48D8410007D7EA /* Exceptions for "liu" folder in "liu" target */ = {
+		CAB376D12F48D8410007D7EA /* Exceptions for "Liu" folder in "Liu" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = CAB376C12F48D6690007D7EA /* liu */;
+			target = CAB376C12F48D6690007D7EA /* Liu */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		CAB376C42F48D6690007D7EA /* liu */ = {
+		CAB376C42F48D6690007D7EA /* Liu */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				CAB376D12F48D8410007D7EA /* Exceptions for "liu" folder in "liu" target */,
+				CAB376D12F48D8410007D7EA /* Exceptions for "Liu" folder in "Liu" target */,
 			);
-			path = liu;
+			path = Liu;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -45,7 +45,7 @@
 		CAB376B92F48D6690007D7EA = {
 			isa = PBXGroup;
 			children = (
-				CAB376C42F48D6690007D7EA /* liu */,
+				CAB376C42F48D6690007D7EA /* Liu */,
 				CAB376C32F48D6690007D7EA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -53,7 +53,7 @@
 		CAB376C32F48D6690007D7EA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CAB376C22F48D6690007D7EA /* liu.app */,
+				CAB376C22F48D6690007D7EA /* Liu.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,9 +61,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		CAB376C12F48D6690007D7EA /* liu */ = {
+		CAB376C12F48D6690007D7EA /* Liu */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CAB376CD2F48D66A0007D7EA /* Build configuration list for PBXNativeTarget "liu" */;
+			buildConfigurationList = CAB376CD2F48D66A0007D7EA /* Build configuration list for PBXNativeTarget "Liu" */;
 			buildPhases = (
 				CAB376BE2F48D6690007D7EA /* Sources */,
 				CAB376BF2F48D6690007D7EA /* Frameworks */,
@@ -74,13 +74,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				CAB376C42F48D6690007D7EA /* liu */,
+				CAB376C42F48D6690007D7EA /* Liu */,
 			);
-			name = liu;
+			name = Liu;
 			packageProductDependencies = (
 			);
-			productName = liu;
-			productReference = CAB376C22F48D6690007D7EA /* liu.app */;
+			productName = Liu;
+			productReference = CAB376C22F48D6690007D7EA /* Liu.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -98,7 +98,7 @@
 					};
 				};
 			};
-			buildConfigurationList = CAB376BD2F48D6690007D7EA /* Build configuration list for PBXProject "liu" */;
+			buildConfigurationList = CAB376BD2F48D6690007D7EA /* Build configuration list for PBXProject "Liu" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -112,7 +112,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CAB376C12F48D6690007D7EA /* liu */,
+				CAB376C12F48D6690007D7EA /* Liu */,
 			);
 		};
 /* End PBXProject section */
@@ -277,7 +277,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = liu/Info.plist;
+				INFOPLIST_FILE = Liu/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Liu;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -312,7 +314,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = liu/Info.plist;
+				INFOPLIST_FILE = Liu/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Liu;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -335,7 +339,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CAB376BD2F48D6690007D7EA /* Build configuration list for PBXProject "liu" */ = {
+		CAB376BD2F48D6690007D7EA /* Build configuration list for PBXProject "Liu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CAB376CB2F48D66A0007D7EA /* Debug */,
@@ -344,7 +348,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CAB376CD2F48D66A0007D7EA /* Build configuration list for PBXNativeTarget "liu" */ = {
+		CAB376CD2F48D66A0007D7EA /* Build configuration list for PBXNativeTarget "Liu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CAB376CE2F48D66A0007D7EA /* Debug */,

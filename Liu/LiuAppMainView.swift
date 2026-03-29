@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  LiuAppMainView.swift
 //  liu
 //
 //  Created by Ярослав on 20.02.2026.
@@ -60,7 +60,7 @@ enum Trigram {
     }
 }
 
-struct ContentView: View {
+struct LiuAppMainView: View {
     @State private var lines: [Line] = []
     @State private var result: Hexagram?
     @State private var relatingResult: Hexagram?
@@ -210,7 +210,7 @@ struct ContentView: View {
     }
 }
 
-private extension ContentView {
+private extension LiuAppMainView {
     // MARK: - Helpers
     private func resultHeader(result: Hexagram, relatingResult: Hexagram?) -> String {
         if showingRelating, let relatingResult {
@@ -551,7 +551,7 @@ fileprivate enum Constants {
 }
 
 #Preview {
-    ContentView()
+    LiuAppMainView()
 }
 
 nonisolated enum SoundEffect: CaseIterable, Hashable, Sendable {
