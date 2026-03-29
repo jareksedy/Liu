@@ -183,6 +183,21 @@ struct LiuAppMainView: View {
                     .buttonStyle(PrimaryButton(isEnabled: result?.getSearchURL(relatingResult: relatingResult) != nil, isSquare: true))
                     .disabled(result == nil)
                 }
+                .background {
+                    Button("") {
+                        guard relatingResult != nil else { return }
+                        withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = false }
+                    }
+                    .keyboardShortcut(.leftArrow, modifiers: [])
+                    .hidden()
+                    
+                    Button("") {
+                        guard relatingResult != nil else { return }
+                        withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = true }
+                    }
+                    .keyboardShortcut(.rightArrow, modifiers: [])
+                    .hidden()
+                }
                 
                 HStack {
                     Button(action: toggleSFX) {
