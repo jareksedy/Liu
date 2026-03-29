@@ -142,7 +142,6 @@ struct ContentView: View {
             }
             .id("content-\(showingRelating)")
             .transition(.opacity)
-            .animation(.snappy(duration: Constants.animationDuration * 1.5, extraBounce: 0.25), value: showingRelating)
             
             Divider()
             
@@ -172,7 +171,7 @@ struct ContentView: View {
                     PrimarySegmentedControl(
                         selection: Binding(
                             get: { showingRelating ? 1 : 0 },
-                            set: { showingRelating = $0 == 1 }
+                            set: { newValue in withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = newValue == 1 } }
                         ),
                         labels: [result?.chinese ?? "1", relatingResult?.chinese ?? "2"],
                         isEnabled: relatingResult != nil
@@ -291,7 +290,7 @@ private extension ContentView {
     
     private func restart() {
         isRestarting = true
-        showingRelating = false
+        withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = false }
         playSound(.drop)
         playSound(.restart)
         
