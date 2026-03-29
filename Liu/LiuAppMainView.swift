@@ -491,25 +491,26 @@ private struct PrimarySegmentedControl: View {
         HStack(spacing: 0) {
             ForEach(labels.indices, id: \.self) { index in
                 let isSelected = selection == index
-                Text(labels[index])
-                    .font(Constants.monospacedRegularFont)
-                    .foregroundStyle(tint)
-                    .padding(9)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        isEnabled && isSelected
-                            ? Color(nsColor: .linkColor).opacity(0.15)
-                            : (isEnabled && hoveredIndex == index ? Color(nsColor: .linkColor).opacity(0.07) : .clear)
-                    )
-                    .contentShape(Rectangle())
-                    .onHover { hovering in
-                        guard isEnabled else { return }
-                        hoveredIndex = hovering ? index : nil
-                    }
-                    .onTapGesture {
-                        guard isEnabled else { return }
-                        selection = index
-                    }
+                ZStack {
+                    isEnabled && isSelected
+                        ? Color(nsColor: .linkColor).opacity(0.1)
+                        : (isEnabled && hoveredIndex == index ? Color(nsColor: .linkColor).opacity(0.1) : .clear)
+                    Text(labels[index])
+                        .font(Constants.monospacedRegularFont)
+                        .foregroundStyle(tint)
+                        .padding(9)
+                        .offset(x: index == 0 ? 2 : (index == labels.count - 1 ? -2 : 0))
+                }
+                .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
+                .onHover { hovering in
+                    guard isEnabled else { return }
+                    hoveredIndex = hovering ? index : nil
+                }
+                .onTapGesture {
+                    guard isEnabled else { return }
+                    selection = index
+                }
                 
                 if index < labels.count - 1 {
                     Rectangle()
