@@ -33,14 +33,14 @@ enum Trigram {
 
     var chinese: String {
         switch self {
-        case .heaven: "天"
-        case .earth: "地"
-        case .thunder: "雷"
-        case .water: "水"
-        case .mountain: "山"
-        case .wind: "风"
-        case .fire: "火"
-        case .lake: "泽"
+        case .heaven: "乾"
+        case .earth: "坤"
+        case .thunder: "震"
+        case .water: "坎"
+        case .mountain: "艮"
+        case .wind: "巽"
+        case .fire: "離"
+        case .lake: "兌"
         }
     }
 
@@ -358,9 +358,16 @@ private extension LiuAppMainView {
                     .font(Constants.monospacedBoldFont)
                 Text(displayed.name)
                     .font(Constants.monospacedRegularFont)
-                Text("\(displayed.secondTrigramName) Above \(displayed.firstTrigramName)")
-                    .font(Constants.monospacedRegularFont)
-                    .foregroundStyle(.secondary)
+                if displayed.secondTrigramName == displayed.firstTrigramName {
+                    Text("\(displayed.secondTrigramName) Above \(displayed.firstTrigramName)")
+                        .font(Constants.monospacedRegularFont)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("\(displayed.firstTrigramName) Below, \(displayed.secondTrigramName) Above")
+                        .font(Constants.monospacedRegularFont)
+                        .foregroundStyle(.secondary)
+                }
+
             } else {
                 Text("六 Liù")
                     .font(Constants.monospacedBoldFont)
