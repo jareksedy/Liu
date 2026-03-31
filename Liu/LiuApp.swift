@@ -29,7 +29,8 @@ struct LiuApp: App {
         MenuBarExtra {
             LiuAppMainView()
         } label: {
-            Text("六")
+            Image("liu-menubar-icon")
+                .frame(width: 18, height: 18)
         }
         .menuBarExtraStyle(.window)
     }
