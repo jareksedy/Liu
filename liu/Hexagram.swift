@@ -14,7 +14,7 @@ struct Hexagram: Identifiable {
     let chinese: String
     let lines: [Bool] // true = solid (yang ⚊), false = broken (yin ⚋), bottom to top
 
-    var symbol: String {
+    var unicodeSymbol: String {
         String(UnicodeScalar(0x4DC0 + id - 1)!)
     }
 
