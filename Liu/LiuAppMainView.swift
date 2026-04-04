@@ -61,9 +61,8 @@ enum Trigram {
 }
 
 struct LiuAppMainView: View {
+    @Environment(SharedState.self) private var sharedState
     @State private var lines: [Line] = []
-    @State private var result: Hexagram?
-    @State private var relatingResult: Hexagram?
     @State private var isRestarting = false
     @State private var showingRelating = false
     @State private var playSFX = false
@@ -88,8 +87,8 @@ struct LiuAppMainView: View {
     var body: some View {
         VStack(spacing: 12) {
             VStack(spacing: 12) {
-                resultView(result: result, relatingResult: relatingResult)
-                    .animation(.easeInOut(duration: Constants.animationDuration * 1.75), value: result == nil)
+                resultView(result: sharedState.result, relatingResult: sharedState.relatingResult)
+                    .animation(.easeInOut(duration: Constants.animationDuration * 1.75), value: sharedState.result == nil)
                     .padding(.bottom, 6)
                 
                 Divider()
@@ -174,26 +173,26 @@ struct LiuAppMainView: View {
                             get: { showingRelating ? 1 : 0 },
                             set: { newValue in withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = newValue == 1 } }
                         ),
-                        labels: [result?.chinese ?? "1", relatingResult?.chinese ?? "2"],
-                        isEnabled: relatingResult != nil
+                        labels: [sharedState.result?.chinese ?? "1", sharedState.relatingResult?.chinese ?? "2"],
+                        isEnabled: sharedState.relatingResult != nil
                     )
                     Button(action: lookUp) {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 12))
                     }
-                    .buttonStyle(PrimaryButton(isEnabled: result?.getSearchURL(relatingResult: relatingResult) != nil, isSquare: true))
-                    .disabled(result == nil)
+                    .buttonStyle(PrimaryButton(isEnabled: sharedState.result?.getSearchURL(relatingResult: sharedState.relatingResult) != nil, isSquare: true))
+                    .disabled(sharedState.result == nil)
                 }
                 .background {
                     Button("") {
-                        guard relatingResult != nil else { return }
+                        guard sharedState.relatingResult != nil else { return }
                         withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = false }
                     }
                     .keyboardShortcut(.leftArrow, modifiers: [])
                     .hidden()
                     
                     Button("") {
-                        guard relatingResult != nil else { return }
+                        guard sharedState.relatingResult != nil else { return }
                         withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = true }
                     }
                     .keyboardShortcut(.rightArrow, modifiers: [])
@@ -248,7 +247,7 @@ private extension LiuAppMainView {
     }
     
     private func trigramLabel(for index: Int) -> String {
-        if showingRelating, let relatingResult {
+        if showingRelating, let relatingResult = sharedState.relatingResult {
             if index == 2, let trigram = Trigram.find(Array(relatingResult.lines[0..<3])) {
                 return trigram.chinese
             }
@@ -273,7 +272,7 @@ private extension LiuAppMainView {
     }
     
     private func lookUp() {
-        guard let url = result?.getSearchURL(relatingResult: relatingResult) else {
+        guard let url = sharedState.result?.getSearchURL(relatingResult: sharedState.relatingResult) else {
             return
         }
         NSWorkspace.shared.open(url)
@@ -292,12 +291,12 @@ private extension LiuAppMainView {
         playSound(.toss)
         
         if isComplete {
-            result = HexagramLibrary.find(lines: lines.map(\.isYang))
+            sharedState.result = HexagramLibrary.find(lines: lines.map(\.isYang))
             
             let hasChangingLines = lines.contains { $0.isChanging }
             if hasChangingLines {
                 let relatingLines = lines.map { $0.isChanging ? !$0.isYang : $0.isYang }
-                relatingResult = HexagramLibrary.find(lines: relatingLines)
+                sharedState.relatingResult = HexagramLibrary.find(lines: relatingLines)
             }
             
             playSound(.cast)
@@ -311,8 +310,8 @@ private extension LiuAppMainView {
         playSound(.restart)
         
         withAnimation(.easeInOut(duration: Constants.animationDuration * 1.25)) {
-            result = nil
-            relatingResult = nil
+            sharedState.result = nil
+            sharedState.relatingResult = nil
         }
         
         let count = lines.count
@@ -577,6 +576,7 @@ fileprivate enum Constants {
 
 #Preview {
     LiuAppMainView()
+        .environment(SharedState())
 }
 
 nonisolated enum SoundEffect: CaseIterable, Hashable, Sendable {

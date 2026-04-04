@@ -66,7 +66,7 @@ enum HexagramLibrary {
         Hexagram(id: 10, pinyin: "Lǚ", name: "Treading", chinese: "履", lines: [true, true, false, true, true, true]),
         Hexagram(id: 11, pinyin: "Tài", name: "Peace", chinese: "泰", lines: [true, true, true, false, false, false]),
         Hexagram(id: 12, pinyin: "Pǐ", name: "Standstill", chinese: "否", lines: [false, false, false, true, true, true]),
-        Hexagram(id: 13, pinyin: "Tóng Rén", name: "Fellowship", chinese: "同人", lines: [true, false, true, true, true, true]),
+        Hexagram(id: 13, pinyin: "Tóng Rén", name: "Fellowship Witn Men", chinese: "同人", lines: [true, false, true, true, true, true]),
         Hexagram(id: 14, pinyin: "Dà Yǒu", name: "Great Possession", chinese: "大有", lines: [true, true, true, true, false, true]),
         Hexagram(id: 15, pinyin: "Qiān", name: "Modesty", chinese: "謙", lines: [false, false, true, false, false, false]),
         Hexagram(id: 16, pinyin: "Yù", name: "Enthusiasm", chinese: "豫", lines: [false, false, false, true, false, false]),

@@ -10,6 +10,7 @@ import SwiftUI
 
 @main
 struct LiuApp: App {
+    @State private var sharedState = SharedState()
     @State private var warmupPlayer: AVAudioPlayer?
     
     init() {
@@ -28,9 +29,13 @@ struct LiuApp: App {
     var body: some Scene {
         MenuBarExtra {
             LiuAppMainView()
+                .environment(sharedState)
         } label: {
-            Image("menubar-icon")
-                .frame(width: 18, height: 18)
+            if let result = sharedState.result {
+                Text("\(result.id)")
+            } else {
+                Text("六")
+            }
         }
         .menuBarExtraStyle(.window)
     }
