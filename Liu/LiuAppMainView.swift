@@ -181,6 +181,7 @@ struct LiuAppMainView: View {
                     }
                     .buttonStyle(PrimaryButton(isEnabled: sharedState.result?.getSearchURL(relatingResult: sharedState.relatingResult) != nil, isSquare: true))
                     .disabled(sharedState.result == nil)
+                    .keyboardShortcut("f")
                 }
                 .background {
                     Button("") {
@@ -205,6 +206,7 @@ struct LiuAppMainView: View {
                             .font(.system(size: 12))
                     }
                     .buttonStyle(PrimaryButton(isSquare: true))
+                    .keyboardShortcut("m")
                     
                     Button("Quit") {
                         NSApplication.shared.terminate(nil)
