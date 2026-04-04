@@ -11,12 +11,15 @@ import SwiftUI
 final class SharedState {
     var result: Hexagram?
     var relatingResult: Hexagram?
+    var showingRelating: Bool
     
     init(
         result: Hexagram? = nil,
-        relatingResult: Hexagram? = nil
+        relatingResult: Hexagram? = nil,
+        showingRelating: Bool = false
     ) {
         self.result = result
         self.relatingResult = relatingResult
+        self.showingRelating = showingRelating
     }
 }

@@ -64,7 +64,6 @@ struct LiuAppMainView: View {
     @Environment(SharedState.self) private var sharedState
     @State private var lines: [Line] = []
     @State private var isRestarting = false
-    @State private var showingRelating = false
     @State private var playSFX = false
     
     private var tossCount: Int { lines.count }
@@ -98,7 +97,7 @@ struct LiuAppMainView: View {
                     // Numbers on the left
                     VStack(spacing: Constants.lineSpacing) {
                         ForEach((0..<6).reversed(), id: \.self) { index in
-                            LineNumberLabel(index: index, isTossed: index < tossCount, isChanging: !showingRelating && index < tossCount && lines[index].isChanging)
+                            LineNumberLabel(index: index, isTossed: index < tossCount, isChanging: !sharedState.showingRelating && index < tossCount && lines[index].isChanging)
                         }
                     }
                     
@@ -106,7 +105,7 @@ struct LiuAppMainView: View {
                     VStack(spacing: Constants.lineSpacing) {
                         ForEach((0..<6).reversed(), id: \.self) { index in
                             if index < tossCount {
-                                lineView(yang: displayedYang(for: index), isChanging: !showingRelating && lines[index].isChanging)
+                                lineView(yang: displayedYang(for: index), isChanging: !sharedState.showingRelating && lines[index].isChanging)
                                     .id(lines[index].id)
                                     .transition(.scale(scale: 0.75).combined(with: .opacity))
                             } else {
@@ -140,7 +139,7 @@ struct LiuAppMainView: View {
                 .padding(.horizontal, -Constants.hexagramNegativePadding)
                 .padding([.top, .bottom], Constants.hexagramTopBottomPadding)
             }
-            .id("content-\(showingRelating)")
+            .id("content-\(sharedState.showingRelating)")
             .transition(.opacity)
             
             Divider()
@@ -170,8 +169,8 @@ struct LiuAppMainView: View {
                 HStack {
                     PrimarySegmentedControl(
                         selection: Binding(
-                            get: { showingRelating ? 1 : 0 },
-                            set: { newValue in withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = newValue == 1 } }
+                            get: { sharedState.showingRelating ? 1 : 0 },
+                            set: { newValue in withAnimation(.easeInOut(duration: Constants.animationDuration)) { sharedState.showingRelating = newValue == 1 } }
                         ),
                         labels: [sharedState.result?.chinese ?? "1", sharedState.relatingResult?.chinese ?? "2"],
                         isEnabled: sharedState.relatingResult != nil
@@ -186,14 +185,14 @@ struct LiuAppMainView: View {
                 .background {
                     Button("") {
                         guard sharedState.relatingResult != nil else { return }
-                        withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = false }
+                        withAnimation(.easeInOut(duration: Constants.animationDuration)) { sharedState.showingRelating = false }
                     }
                     .keyboardShortcut(.leftArrow, modifiers: [])
                     .hidden()
                     
                     Button("") {
                         guard sharedState.relatingResult != nil else { return }
-                        withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = true }
+                        withAnimation(.easeInOut(duration: Constants.animationDuration)) { sharedState.showingRelating = true }
                     }
                     .keyboardShortcut(.rightArrow, modifiers: [])
                     .hidden()
@@ -228,7 +227,7 @@ struct LiuAppMainView: View {
 private extension LiuAppMainView {
     // MARK: - Helpers
     private func resultHeader(result: Hexagram, relatingResult: Hexagram?) -> String {
-        if showingRelating, let relatingResult {
+        if sharedState.showingRelating, let relatingResult {
             return "\(relatingResult.id). \(relatingResult.chinese) \(relatingResult.pinyin)"
         }
         let changingIndices = lines.enumerated()
@@ -240,14 +239,14 @@ private extension LiuAppMainView {
     
     private func displayedYang(for index: Int) -> Bool {
         guard index < tossCount else { return true }
-        if showingRelating && lines[index].isChanging {
+        if sharedState.showingRelating && lines[index].isChanging {
             return !lines[index].isYang
         }
         return lines[index].isYang
     }
     
     private func trigramLabel(for index: Int) -> String {
-        if showingRelating, let relatingResult = sharedState.relatingResult {
+        if sharedState.showingRelating, let relatingResult = sharedState.relatingResult {
             if index == 2, let trigram = Trigram.find(Array(relatingResult.lines[0..<3])) {
                 return trigram.chinese
             }
@@ -305,7 +304,7 @@ private extension LiuAppMainView {
     
     private func restart() {
         isRestarting = true
-        withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = false }
+        withAnimation(.easeInOut(duration: Constants.animationDuration)) { sharedState.showingRelating = false }
         playSound(.drop)
         playSound(.restart)
         
@@ -351,7 +350,7 @@ private extension LiuAppMainView {
     private func resultView(result: Hexagram?, relatingResult: Hexagram?) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             if let result {
-                let displayed = showingRelating ? (relatingResult ?? result) : result
+                let displayed = sharedState.showingRelating ? (relatingResult ?? result) : result
                 
                 Text("\(resultHeader(result: result, relatingResult: relatingResult))")
                     .font(Constants.monospacedBoldFont)
