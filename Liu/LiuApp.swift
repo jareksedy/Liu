@@ -31,34 +31,42 @@ struct LiuApp: App {
             LiuAppMainView()
                 .environment(sharedState)
         } label: {
-            Image(
-                nsImage: menuBarImage(
-                    for: getStatus(
-                        for: sharedState.showingRelating ?
-                        sharedState.relatingResult : sharedState.result
-                    )
-                )
-            )
+            let hexagram = sharedState.showingRelating ?
+                sharedState.relatingResult : sharedState.result
+            Image(nsImage: menuBarImage(for: hexagram))
         }
         .menuBarExtraStyle(.window)
     }
-    
-    private static let menuBarImageSize = CGSize(width: 36, height: 18)
-    private static let menuBarFont = NSFont.monospacedSystemFont(ofSize: 10, weight: .bold)
-    
-    private func getStatus(for hexagram: Hexagram?) -> String {
-        guard let hexagram else {
-            return "六"
-        }
-        return "\(hexagram.id). \(hexagram.unicodeSymbol)"
-    }
 
-    private func menuBarImage(for text: String) -> NSImage {
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: Self.menuBarFont,
-            .foregroundColor: NSColor.black
-        ]
-        let textSize = (text as NSString).size(withAttributes: attributes)
+    private static let menuBarImageSize = CGSize(width: 32, height: 18)
+
+    private func menuBarImage(for hexagram: Hexagram?) -> NSImage {
+        let attributed: NSAttributedString
+        if let hexagram {
+            let idFont = NSFont.monospacedSystemFont(ofSize: 10, weight: .bold)
+            let symbolFont = NSFont.monospacedSystemFont(ofSize: 14, weight: .bold)
+            let baselineOffset = (symbolFont.capHeight - idFont.capHeight) / 2
+            let idPart = NSAttributedString(string: "\(hexagram.id).", attributes: [
+                .font: idFont,
+                .foregroundColor: NSColor.black,
+                .baselineOffset: baselineOffset
+            ])
+            let symbolPart = NSAttributedString(string: hexagram.unicodeSymbol, attributes: [
+                .font: symbolFont,
+                .foregroundColor: NSColor.black
+            ])
+            let result = NSMutableAttributedString()
+            result.append(idPart)
+            result.append(symbolPart)
+            attributed = result
+        } else {
+            attributed = NSAttributedString(string: "六", attributes: [
+                .font: NSFont.monospacedSystemFont(ofSize: 12, weight: .bold),
+                .foregroundColor: NSColor.black
+            ])
+        }
+
+        let textSize = attributed.size()
         let imageSize = Self.menuBarImageSize
         let image = NSImage(size: imageSize)
         image.lockFocus()
@@ -66,7 +74,7 @@ struct LiuApp: App {
             x: (imageSize.width - textSize.width) / 2,
             y: (imageSize.height - textSize.height) / 2
         )
-        (text as NSString).draw(at: origin, withAttributes: attributes)
+        attributed.draw(at: origin)
         image.unlockFocus()
         image.isTemplate = true
         return image
