@@ -61,7 +61,7 @@ struct LiuApp: App {
             attributed = result
         } else {
             attributed = NSAttributedString(string: "六", attributes: [
-                .font: NSFont.monospacedSystemFont(ofSize: 12, weight: .bold),
+                .font: NSFont.monospacedSystemFont(ofSize: 8, weight: .black),
                 .foregroundColor: NSColor.black
             ])
         }
@@ -70,6 +70,22 @@ struct LiuApp: App {
         let imageSize = Self.menuBarImageSize
         let image = NSImage(size: imageSize)
         image.lockFocus()
+
+        if hexagram == nil {
+            // Filled circle centered in the image, with the character knocked out
+            let diameter = imageSize.height
+            let circleRect = NSRect(
+                x: (imageSize.width - diameter) / 2,
+                y: 0,
+                width: diameter,
+                height: diameter
+            )
+            let circle = NSBezierPath(ovalIn: circleRect.insetBy(dx: 0.5, dy: 0.5))
+            circle.lineWidth = 1
+            NSColor.black.setStroke()
+            circle.stroke()
+        }
+
         let origin = CGPoint(
             x: (imageSize.width - textSize.width) / 2,
             y: (imageSize.height - textSize.height) / 2
