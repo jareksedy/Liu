@@ -25,6 +25,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		CA1FEB332F82DA29006BE55D /* Images */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Images;
+			sourceTree = "<group>";
+		};
 		CAB376C42F48D6690007D7EA /* Liu */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -50,6 +55,7 @@
 		CAB376B92F48D6690007D7EA = {
 			isa = PBXGroup;
 			children = (
+				CA1FEB332F82DA29006BE55D /* Images */,
 				CAB376C42F48D6690007D7EA /* Liu */,
 				CAB376C32F48D6690007D7EA /* Products */,
 			);
@@ -79,6 +85,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				CA1FEB332F82DA29006BE55D /* Images */,
 				CAB376C42F48D6690007D7EA /* Liu */,
 			);
 			name = Liu;
