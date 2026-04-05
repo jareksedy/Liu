@@ -6,6 +6,7 @@
 //
 
 import AVFoundation
+import FirebaseAnalytics
 import SwiftUI
 
 struct Line: Identifiable {
@@ -275,6 +276,9 @@ private extension LiuAppMainView {
             return
         }
         NSWorkspace.shared.open(url)
+        Analytics.logEvent("hexagram_lookup", parameters: [
+            "hexagram_id": sharedState.result?.id ?? 0
+        ])
     }
     
     private func toss() {
@@ -299,10 +303,16 @@ private extension LiuAppMainView {
             }
             
             playSound(.cast)
+            
+            Analytics.logEvent("hexagram_cast", parameters: [
+                "hexagram_id": sharedState.result?.id ?? 0,
+                "has_relating": hasChangingLines
+            ])
         }
     }
     
     private func restart() {
+        Analytics.logEvent("hexagram_restart", parameters: nil)
         isRestarting = true
         withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = false }
         playSound(.drop)

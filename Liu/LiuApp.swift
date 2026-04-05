@@ -6,6 +6,7 @@
 //
 
 import AVFoundation
+import FirebaseCore
 import SwiftUI
 
 @main
@@ -14,6 +15,8 @@ struct LiuApp: App {
     @State private var warmupPlayer: AVAudioPlayer?
     
     init() {
+        FirebaseApp.configure()
+        
         // Pre-load all sound data into memory
         _ = SoundEffect.cache
         
