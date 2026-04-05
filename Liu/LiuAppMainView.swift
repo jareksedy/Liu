@@ -106,7 +106,7 @@ struct LiuAppMainView: View {
                     VStack(spacing: Constants.lineSpacing) {
                         ForEach((0..<6).reversed(), id: \.self) { index in
                             if index < tossCount {
-                                lineView(yang: displayedYang(for: index), isChanging: !sharedState.showingRelating && lines[index].isChanging)
+                                lineView(yang: displayedYang(for: index), isChanging: !showingRelating && lines[index].isChanging)
                                     .id(lines[index].id)
                                     .transition(.scale(scale: 0.75).combined(with: .opacity))
                             } else {
