@@ -15,7 +15,9 @@
 </p>
 
 <p align="center">
-  <img src="Images/Screenshot.png" alt="Screenshot" width="260">
+  <img src="Images/Screenshot-1.png" alt="Screenshot 1" width="260">
+  <img src="Images/Screenshot-2.png" alt="Screenshot 2" width="260">
+  <img src="Images/Screenshot-3.png" alt="Screenshot 3" width="260">
 </p>
 
 ## About
