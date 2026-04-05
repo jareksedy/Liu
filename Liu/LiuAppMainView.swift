@@ -361,16 +361,9 @@ private extension LiuAppMainView {
                     .font(Constants.monospacedBoldFont)
                 Text(displayed.name)
                     .font(Constants.monospacedRegularFont)
-                if displayed.secondTrigramName == displayed.firstTrigramName {
-                    Text("\(displayed.secondTrigramName) Above \(displayed.firstTrigramName)")
-                        .font(Constants.monospacedRegularFont)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text("\(displayed.firstTrigramName) Below, \(displayed.secondTrigramName) Above")
-                        .font(Constants.monospacedRegularFont)
-                        .foregroundStyle(.secondary)
-                }
-
+                Text("\(displayed.secondTrigramChinese) \(displayed.secondTrigramName) ⁄ \(displayed.firstTrigramChinese) \(displayed.firstTrigramName)")
+                    .font(Constants.monospacedRegularFont)
+                    .foregroundStyle(.secondary)
             } else {
                 Text("六 Liù")
                     .font(Constants.monospacedBoldFont)
