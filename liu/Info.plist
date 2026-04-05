@@ -4,7 +4,5 @@
 <dict>
 	<key>LSUIElement</key>
 	<true/>
-	<key>ATSApplicationFontsPath</key>
-	<string>.</string>
 </dict>
 </plist>
