@@ -61,7 +61,7 @@ struct LiuApp: App {
 
         let origin = CGPoint(
             x: (imageSize.width - textSize.width) / 2 + (hexagram != nil ? 0 : 0.25),
-            y: (imageSize.height - textSize.height) / 2 + (hexagram != nil ? 0.95 : 0.45)
+            y: (imageSize.height - textSize.height) / 2 + (hexagram != nil ? 0.95 : 0.475)
         )
         (text as NSString).draw(at: origin, withAttributes: attributes)
         image.unlockFocus()
