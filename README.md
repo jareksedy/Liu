@@ -14,6 +14,10 @@
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
 </p>
 
+<p align="center">
+  <img src="Images/Screenshot.png" alt="Screenshot" width="260">
+</p>
+
 ## About
 
 Liu (六, "six" in Chinese) is a lightweight macOS menu bar app that lets you consult the I Ching using the traditional three-coin method. Cast hexagrams with a click, view changing lines, and look up interpretations — all without leaving your menu bar.
