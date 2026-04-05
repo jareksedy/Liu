@@ -65,23 +65,19 @@ struct LiuAppMainView: View {
     @State private var lines: [Line] = []
     @State private var showingRelating = false
     @State private var isRestarting = false
-    @State private var playSFX = false
-    
+    @AppStorage(Constants.playSFXKey) private var playSFX = true
+
     private var tossCount: Int { lines.count }
     private var isComplete: Bool { tossCount == 6 }
-    
+
     private var lowerTrigram: Trigram? {
         guard tossCount >= 3 else { return nil }
         return Trigram.find(lines[0..<3].map(\.isYang))
     }
-    
+
     private var upperTrigram: Trigram? {
         guard tossCount >= 6 else { return nil }
         return Trigram.find(lines[3..<6].map(\.isYang))
-    }
-    
-    init() {
-        self.playSFX = UserDefaults.standard.bool(forKey: Constants.playSFXKey)
     }
     
     var body: some View {
@@ -272,7 +268,6 @@ private extension LiuAppMainView {
     // MARK: - Actions
     private func toggleSFX() {
         playSFX.toggle()
-        UserDefaults.standard.set(playSFX, forKey: Constants.playSFXKey)
     }
     
     private func lookUp() {
