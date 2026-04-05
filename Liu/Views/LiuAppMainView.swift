@@ -9,58 +9,6 @@ import AVFoundation
 import FirebaseAnalytics
 import SwiftUI
 
-struct Line: Identifiable {
-    let id = UUID()
-    let value: Int // 6 = old yin, 7 = young yang, 8 = young yin, 9 = old yang
-    var isYang: Bool { value == 7 || value == 9 }
-    var isChanging: Bool { value == 6 || value == 9 }
-}
-
-enum Trigram {
-    case heaven, earth, thunder, water, mountain, wind, fire, lake
-
-    var name: String {
-        switch self {
-        case .heaven: "Heaven"
-        case .earth: "Earth"
-        case .thunder: "Thunder"
-        case .water: "Water"
-        case .mountain: "Mountain"
-        case .wind: "Wind"
-        case .fire: "Fire"
-        case .lake: "Lake"
-        }
-    }
-
-    var chinese: String {
-        switch self {
-        case .heaven: "乾"
-        case .earth: "坤"
-        case .thunder: "震"
-        case .water: "坎"
-        case .mountain: "艮"
-        case .wind: "巽"
-        case .fire: "離"
-        case .lake: "兌"
-        }
-    }
-
-    /// Lookup by three lines (bottom to top), true = yang.
-    static func find(_ lines: [Bool]) -> Trigram? {
-        switch lines {
-        case [true, true, true]: .heaven
-        case [false, false, false]: .earth
-        case [true, false, false]: .thunder
-        case [false, true, false]: .water
-        case [false, false, true]: .mountain
-        case [false, true, true]: .wind
-        case [true, false, true]: .fire
-        case [true, true, false]: .lake
-        default: nil
-        }
-    }
-}
-
 struct LiuAppMainView: View {
     @Environment(SharedState.self) private var sharedState
     @State private var lines: [Line] = []
@@ -80,16 +28,16 @@ struct LiuAppMainView: View {
         guard tossCount >= 6 else { return nil }
         return Trigram.find(lines[3..<6].map(\.isYang))
     }
-    
+
     var body: some View {
         VStack(spacing: 12) {
             VStack(spacing: 12) {
                 resultView(result: sharedState.result, relatingResult: sharedState.relatingResult)
                     .animation(.easeInOut(duration: Constants.animationDuration * 1.75), value: sharedState.result == nil)
                     .padding(.bottom, 6)
-                
+
                 Divider()
-                
+
                 // Hexagram display — lines appear bottom-to-top
                 HStack(spacing: 4) {
                     // Numbers on the left
@@ -98,7 +46,7 @@ struct LiuAppMainView: View {
                             LineNumberLabel(index: index, isTossed: index < tossCount, isChanging: !showingRelating && index < tossCount && lines[index].isChanging)
                         }
                     }
-                    
+
                     // Lines
                     VStack(spacing: Constants.lineSpacing) {
                         ForEach((0..<6).reversed(), id: \.self) { index in
@@ -113,7 +61,7 @@ struct LiuAppMainView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .animation(.snappy(duration: Constants.animationDuration, extraBounce: 0.25), value: tossCount)
-                    
+
                     // Trigram names on the right
                     VStack(spacing: Constants.lineSpacing) {
                         ForEach((0..<6).reversed(), id: \.self) { index in
@@ -139,9 +87,9 @@ struct LiuAppMainView: View {
             }
             .id("content-\(showingRelating)")
             .transition(.opacity)
-            
+
             Divider()
-            
+
             VStack(spacing: 12) {
                 Button(action: toss) {
                     Group {
@@ -163,7 +111,7 @@ struct LiuAppMainView: View {
                 }
                 .keyboardShortcut(.return, modifiers: [])
                 .buttonStyle(PrimaryButton())
-                
+
                 HStack {
                     PrimarySegmentedControl(
                         selection: Binding(
@@ -196,7 +144,7 @@ struct LiuAppMainView: View {
                     .keyboardShortcut(.rightArrow, modifiers: [])
                     .hidden()
                 }
-                
+
                 HStack {
                     Button(action: toggleSFX) {
                         Image(systemName: playSFX ? "speaker.wave.2" : "speaker.slash")
@@ -205,7 +153,7 @@ struct LiuAppMainView: View {
                     }
                     .buttonStyle(PrimaryButton(isSquare: true))
                     .keyboardShortcut("m")
-                    
+
                     Button("Quit") {
                         NSApplication.shared.terminate(nil)
                     }
@@ -226,9 +174,10 @@ struct LiuAppMainView: View {
     }
 }
 
+// MARK: - Helpers
+
 private extension LiuAppMainView {
-    // MARK: - Helpers
-    private func resultHeader(result: Hexagram, relatingResult: Hexagram?) -> String {
+    func resultHeader(result: Hexagram, relatingResult: Hexagram?) -> String {
         if showingRelating, let relatingResult {
             return "\(relatingResult.id). \(relatingResult.chinese) \(relatingResult.pinyin)"
         }
@@ -238,16 +187,16 @@ private extension LiuAppMainView {
         let changingPart = changingIndices.joined(separator: ".")
         return "\(result.id).\(changingPart) \(result.chinese) \(result.pinyin)"
     }
-    
-    private func displayedYang(for index: Int) -> Bool {
+
+    func displayedYang(for index: Int) -> Bool {
         guard index < tossCount else { return true }
         if showingRelating && lines[index].isChanging {
             return !lines[index].isYang
         }
         return lines[index].isYang
     }
-    
-    private func trigramLabel(for index: Int) -> String {
+
+    func trigramLabel(for index: Int) -> String {
         if showingRelating, let relatingResult = sharedState.relatingResult {
             if index == 2, let trigram = Trigram.find(Array(relatingResult.lines[0..<3])) {
                 return trigram.chinese
@@ -265,13 +214,16 @@ private extension LiuAppMainView {
         }
         return " "
     }
-    
-    // MARK: - Actions
-    private func toggleSFX() {
+}
+
+// MARK: - Actions
+
+private extension LiuAppMainView {
+    func toggleSFX() {
         playSFX.toggle()
     }
-    
-    private func lookUp() {
+
+    func lookUp() {
         guard let url = sharedState.result?.getSearchURL(relatingResult: sharedState.relatingResult) else {
             return
         }
@@ -280,49 +232,49 @@ private extension LiuAppMainView {
             "hexagram_id": sharedState.result?.id ?? 0
         ])
     }
-    
-    private func toss() {
+
+    func toss() {
         guard !isRestarting else { return }
         guard !isComplete else {
             restart()
             return
         }
-        
+
         let value = Int.yijingCoinsToss()
         lines.append(Line(value: value))
-        
+
         playSound(.toss)
-        
+
         if isComplete {
             sharedState.result = HexagramLibrary.find(lines: lines.map(\.isYang))
-            
+
             let hasChangingLines = lines.contains { $0.isChanging }
             if hasChangingLines {
                 let relatingLines = lines.map { $0.isChanging ? !$0.isYang : $0.isYang }
                 sharedState.relatingResult = HexagramLibrary.find(lines: relatingLines)
             }
-            
+
             playSound(.cast)
-            
+
             Analytics.logEvent("hexagram_cast", parameters: [
                 "hexagram_id": sharedState.result?.id ?? 0,
                 "has_relating": hasChangingLines
             ])
         }
     }
-    
-    private func restart() {
+
+    func restart() {
         Analytics.logEvent("hexagram_restart", parameters: nil)
         isRestarting = true
         withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = false }
         playSound(.drop)
         playSound(.restart)
-        
+
         withAnimation(.easeInOut(duration: Constants.animationDuration * 1.25)) {
             sharedState.result = nil
             sharedState.relatingResult = nil
         }
-        
+
         let count = lines.count
         for i in 0..<count {
             DispatchQueue.main.asyncAfter(deadline: .now() + Constants.restartLineDelay * Double(i)) {
@@ -335,8 +287,8 @@ private extension LiuAppMainView {
             }
         }
     }
-    
-    private func playSound(_ soundEffect: SoundEffect) {
+
+    func playSound(_ soundEffect: SoundEffect) {
         guard playSFX else {
             return
         }
@@ -356,12 +308,16 @@ private extension LiuAppMainView {
             player.play()
         }
     }
-    
-    private func resultView(result: Hexagram?, relatingResult: Hexagram?) -> some View {
+}
+
+// MARK: - Subviews
+
+private extension LiuAppMainView {
+    func resultView(result: Hexagram?, relatingResult: Hexagram?) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             if let result {
                 let displayed = showingRelating ? (relatingResult ?? result) : result
-                
+
                 Text("\(resultHeader(result: result, relatingResult: relatingResult))")
                     .font(Constants.monospacedBoldFont)
                 Text(displayed.name)
@@ -383,9 +339,8 @@ private extension LiuAppMainView {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
-    // MARK: - Line drawing
-    private func lineView(yang: Bool, isChanging: Bool) -> some View {
+
+    func lineView(yang: Bool, isChanging: Bool) -> some View {
         let color: Color = isChanging ? Color(nsColor: .linkColor) : Color(nsColor: .labelColor)
         return HStack(spacing: yang ? 0 : Constants.yinPadding) {
             if yang {
@@ -404,8 +359,8 @@ private extension LiuAppMainView {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, Constants.horizontalHexagramPadding)
     }
-    
-    private func linePlaceholder() -> some View {
+
+    func linePlaceholder() -> some View {
         RoundedRectangle(cornerRadius: Constants.cornerRadius)
             .frame(height: Constants.lineHeight)
             .foregroundStyle(.quaternary)
@@ -413,200 +368,7 @@ private extension LiuAppMainView {
     }
 }
 
-private struct LineNumberLabel: View {
-    let index: Int
-    let isTossed: Bool
-    let isChanging: Bool
-
-    private var color: Color {
-        if isChanging { return Color(nsColor: .linkColor) }
-        if isTossed { return Color(nsColor: .labelColor) }
-        return Color(nsColor: .quaternaryLabelColor)
-    }
-
-    var body: some View {
-        Text("\(index + 1)")
-            .font(Constants.monospacedRegularSmallFont)
-            .foregroundStyle(color)
-            .frame(width: Constants.lineLabelWidth, height: Constants.lineHeight)
-            .animation(
-                .easeInOut(duration: Constants.animationDuration)
-                    .delay(Constants.changingLineColorDelay),
-                value: isChanging
-            )
-            .animation(.easeInOut(duration: Constants.animationDuration), value: isTossed)
-    }
-}
-
-private struct PrimaryButtonLabel<Label: View>: View {
-    let label: Label
-    let isPressed: Bool
-    let isEnabled: Bool
-    let isSquare: Bool
-    @State private var isHovered = false
-    
-    private var tint: Color {
-        Color(nsColor: .linkColor).opacity(isEnabled ? 1 : 0.3)
-    }
-    
-    var body: some View {
-        label
-            .font(Constants.monospacedRegularFont)
-            .foregroundStyle(tint)
-            .padding(9)
-            .frame(maxWidth: isSquare ? nil : .infinity)
-            .frame(width: isSquare ? 34 : nil, height: isSquare ? 34 : nil)
-            .background(isEnabled && isHovered ? Color(nsColor: .linkColor).opacity(0.1) : .clear)
-            .clipShape(isSquare ? AnyShape(Circle()) : AnyShape(Capsule()))
-            .overlay(
-                Group {
-                    if isSquare {
-                        Circle().strokeBorder(tint, lineWidth: 1)
-                    } else {
-                        Capsule().strokeBorder(tint, lineWidth: 1)
-                    }
-                }
-            )
-            .animation(.easeOut(duration: 0.1), value: isPressed)
-            .animation(.easeInOut(duration: 0.1), value: isHovered)
-            .animation(.easeInOut(duration: Constants.animationDuration), value: isEnabled)
-            .onHover { hovering in
-                isHovered = hovering
-            }
-    }
-}
-
-private struct PrimaryButton: ButtonStyle {
-    var isEnabled: Bool = true
-    var isSquare: Bool = false
-    
-    func makeBody(configuration: Configuration) -> some View {
-        PrimaryButtonLabel(label: configuration.label, isPressed: configuration.isPressed, isEnabled: isEnabled, isSquare: isSquare)
-    }
-}
-
-private struct PrimarySegmentedControl: View {
-    @Binding var selection: Int
-    let labels: [String]
-    var isEnabled: Bool = true
-    
-    @State private var hoveredIndex: Int? = nil
-    
-    private var tint: Color {
-        Color(nsColor: .linkColor).opacity(isEnabled ? 1 : 0.3)
-    }
-    
-    var body: some View {
-        HStack(spacing: 0) {
-            ForEach(labels.indices, id: \.self) { index in
-                let isSelected = selection == index
-                ZStack {
-                    isEnabled && isSelected
-                        ? Color(nsColor: .linkColor).opacity(0.1)
-                        : (isEnabled && hoveredIndex == index ? Color(nsColor: .linkColor).opacity(0.1) : .clear)
-                    Text(labels[index])
-                        .font(Constants.monospacedRegularFont)
-                        .foregroundStyle(tint)
-                        .padding(9)
-                        .offset(x: index == 0 ? 2 : (index == labels.count - 1 ? -2 : 0))
-                }
-                .frame(maxWidth: .infinity)
-                .contentShape(Rectangle())
-                .onHover { hovering in
-                    guard isEnabled else { return }
-                    hoveredIndex = hovering ? index : nil
-                }
-                .onTapGesture {
-                    guard isEnabled else { return }
-                    selection = index
-                }
-                
-                if index < labels.count - 1 {
-                    Rectangle()
-                        .fill(tint)
-                        .frame(width: 1)
-                        .padding(.vertical, 1)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .clipShape(Capsule())
-        .overlay(
-            Capsule()
-                .strokeBorder(tint, lineWidth: 1)
-        )
-        .animation(.easeInOut(duration: 0.1), value: selection)
-        .animation(.easeInOut(duration: 0.1), value: hoveredIndex)
-        .animation(.easeInOut(duration: Constants.animationDuration), value: isEnabled)
-    }
-}
-
-extension Int {
-    /// Three-coin method: each coin is heads (3) or tails (2).
-    /// Sum produces 6 (old yin), 7 (young yang), 8 (young yin), or 9 (old yang).
-    static func yijingCoinsToss() -> Int {
-        (Bool.random() ? 3 : 2) +
-        (Bool.random() ? 3 : 2) +
-        (Bool.random() ? 3 : 2)
-    }
-}
-
-fileprivate enum Constants {
-    static let lookupButtonTopPadding: CGFloat = 10
-    static let characterTopPadding: CGFloat = 14
-    static let characterBottomPadding: CGFloat = 14
-    static let chineseCharacterFont: Font = .custom("851tegakizatsu", size: 72)
-    static let monospacedBoldFont: Font = .system(size: 12, weight: .bold, design: .monospaced)
-    static let monospacedRegularFont: Font = .system(size: 12, weight: .regular, design: .monospaced)
-    static let monospacedRegularSmallFont: Font = .system(size: 8, weight: .regular, design: .monospaced)
-    static let monospacedRegularLargeFont: Font = .system(size: 48, weight: .ultraLight, design: .monospaced)
-    static let animationDuration: TimeInterval = 0.25
-    static let restartLineDelay: TimeInterval = 0.045
-    static let hexagramNegativePadding: CGFloat = 6
-    static let hexagramTopBottomPadding: CGFloat = 10
-    static let lineSpacing: CGFloat = 10
-    static let cornerRadius: CGFloat = 2
-    static let yinPadding: CGFloat = 20
-    static let lineHeight: CGFloat = 10
-    static let horizontalLinePadding: CGFloat = 0
-    static let horizontalHexagramPadding: CGFloat = 2.5
-    static let lineNumberLeading: CGFloat = 0
-    static let lineLabelWidth: CGFloat = 14
-    static let changingLineColorDelay: TimeInterval = 0.1
-    static let playSFXKey: String = "playSFX"
-}
-
 #Preview {
     LiuAppMainView()
         .environment(SharedState())
 }
-
-nonisolated enum SoundEffect: CaseIterable, Hashable, Sendable {
-    case toss
-    case cast
-    case drop
-    case restart
-    
-    static let playQueue = DispatchQueue(label: "liu.sound", qos: .userInitiated)
-    static var activePlayers: [AVAudioPlayer] = []
-    
-    static let cache: [SoundEffect: Data] = {
-        var result: [SoundEffect: Data] = [:]
-        for effect in SoundEffect.allCases {
-            if let url = effect.url, let data = try? Data(contentsOf: url) {
-                result[effect] = data
-            }
-        }
-        return result
-    }()
-    
-    var url: URL? {
-        switch self {
-        case .toss: return Bundle.main.url(forResource: "coin-toss", withExtension: "mp3")
-        case .cast: return Bundle.main.url(forResource: "guzheng-3", withExtension: "mp3")
-        case .drop: return Bundle.main.url(forResource: "coins-drop", withExtension: "mp3")
-        case .restart: return Bundle.main.url(forResource: "guzheng-1", withExtension: "mp3")
-        }
-    }
-}
-
