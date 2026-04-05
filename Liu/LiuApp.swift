@@ -38,59 +38,32 @@ struct LiuApp: App {
         .menuBarExtraStyle(.window)
     }
 
-    private static let menuBarImageSize = CGSize(width: 32, height: 18)
+    private static let menuBarImageSize = CGSize(width: 18, height: 18)
 
     private func menuBarImage(for hexagram: Hexagram?) -> NSImage {
-        let attributed: NSAttributedString
-        if let hexagram {
-            let idFont = NSFont.monospacedSystemFont(ofSize: 10, weight: .bold)
-            let symbolFont = NSFont.monospacedSystemFont(ofSize: 14, weight: .bold)
-            let baselineOffset = (symbolFont.capHeight - idFont.capHeight) / 2
-            let idPart = NSAttributedString(string: "\(hexagram.id).", attributes: [
-                .font: idFont,
-                .foregroundColor: NSColor.black,
-                .baselineOffset: baselineOffset
-            ])
-            let symbolPart = NSAttributedString(string: hexagram.unicodeSymbol, attributes: [
-                .font: symbolFont,
-                .foregroundColor: NSColor.black
-            ])
-            let result = NSMutableAttributedString()
-            result.append(idPart)
-            result.append(symbolPart)
-            attributed = result
-        } else {
-            attributed = NSAttributedString(string: "六", attributes: [
-                .font: NSFont.monospacedSystemFont(ofSize: 8, weight: .black),
-                .foregroundColor: NSColor.black
-            ])
-        }
+        let text = hexagram?.unicodeSymbol ?? "六"
+        let font = NSFont.monospacedSystemFont(ofSize: hexagram != nil ? 14 : 10, weight: hexagram != nil ? .regular : .bold)
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: NSColor.black
+        ]
 
-        let textSize = attributed.size()
+        let textSize = (text as NSString).size(withAttributes: attributes)
         let imageSize = Self.menuBarImageSize
         let image = NSImage(size: imageSize)
         image.lockFocus()
 
-        if hexagram == nil {
-            // Filled circle centered in the image, with the character knocked out
-            let diameter = imageSize.height
-            let circleRect = NSRect(
-                x: (imageSize.width - diameter) / 2,
-                y: 0,
-                width: diameter,
-                height: diameter
-            )
-            let circle = NSBezierPath(ovalIn: circleRect.insetBy(dx: 0.5, dy: 0.5))
-            circle.lineWidth = 1
-            NSColor.black.setStroke()
-            circle.stroke()
-        }
+        let circleRect = NSRect(origin: .zero, size: imageSize).insetBy(dx: 0.5, dy: 0.5)
+        let circle = NSBezierPath(ovalIn: circleRect)
+        circle.lineWidth = 1
+        NSColor.black.setStroke()
+        circle.stroke()
 
         let origin = CGPoint(
-            x: (imageSize.width - textSize.width) / 2,
-            y: (imageSize.height - textSize.height) / 2
+            x: (imageSize.width - textSize.width) / 2 + (hexagram != nil ? 0 : 0.25),
+            y: (imageSize.height - textSize.height) / 2 + (hexagram != nil ? 0.95 : 0.45)
         )
-        attributed.draw(at: origin)
+        (text as NSString).draw(at: origin, withAttributes: attributes)
         image.unlockFocus()
         image.isTemplate = true
         return image
