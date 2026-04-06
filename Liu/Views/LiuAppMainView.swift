@@ -222,6 +222,14 @@ private extension LiuAppMainView {
     func toggleSFX() {
         playSFX.toggle()
     }
+    
+    func aboutTheApp() {
+        guard let url = URL(string: "https://liuapp.asia") else {
+            return
+        }
+        NSWorkspace.shared.open(url)
+        Analytics.logEvent("open_app_webpage", parameters: [:])
+    }
 
     func lookUp() {
         guard let url = sharedState.result?.getSearchURL(relatingResult: sharedState.relatingResult) else {
@@ -330,7 +338,7 @@ private extension LiuAppMainView {
                     .font(Constants.monospacedBoldFont)
                 Text("Menu Bar I Ching Oracle")
                     .font(Constants.monospacedRegularFont)
-                Button(action: {}) {
+                Button(action: aboutTheApp) {
                     Text("About The App")
                 }
                 .font(Constants.monospacedRegularFont)
