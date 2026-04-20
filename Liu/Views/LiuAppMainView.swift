@@ -171,6 +171,12 @@ struct LiuAppMainView: View {
         .onChange(of: showingRelating) { _, newValue in
             sharedState.showingRelating = newValue
         }
+        .onAppear {
+            restoreFromCloud()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSUbiquitousKeyValueStore.didChangeExternallyNotification)) { _ in
+            restoreFromCloud()
+        }
     }
 }
 
@@ -213,6 +219,27 @@ private extension LiuAppMainView {
             }
         }
         return " "
+    }
+}
+
+// MARK: - Cloud Sync
+
+private extension LiuAppMainView {
+    func restoreFromCloud() {
+        guard let values = CloudSyncService.loadLineValues() else { return }
+        // Don't interrupt a cast in progress
+        guard lines.isEmpty || lines.count == 6 else { return }
+
+        lines = values.map { Line(value: $0) }
+        sharedState.result = HexagramLibrary.find(lines: lines.map(\.isYang))
+
+        let hasChangingLines = lines.contains { $0.isChanging }
+        if hasChangingLines {
+            let relatingLines = lines.map { $0.isChanging ? !$0.isYang : $0.isYang }
+            sharedState.relatingResult = HexagramLibrary.find(lines: relatingLines)
+        } else {
+            sharedState.relatingResult = nil
+        }
     }
 }
 
@@ -261,6 +288,8 @@ private extension LiuAppMainView {
                 let relatingLines = lines.map { $0.isChanging ? !$0.isYang : $0.isYang }
                 sharedState.relatingResult = HexagramLibrary.find(lines: relatingLines)
             }
+
+            CloudSyncService.saveLineValues(lines.map(\.value))
 
             playSound(.cast)
 

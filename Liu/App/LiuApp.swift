@@ -16,6 +16,7 @@ struct LiuApp: App {
     
     init() {
         FirebaseApp.configure()
+        CloudSyncService.start()
         
         // Pre-load all sound data into memory
         _ = SoundEffect.cache
