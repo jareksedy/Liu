@@ -11,12 +11,15 @@ import SwiftUI
 
 @main
 struct LiuApp: App {
-    @State private var sharedState = SharedState()
+    @State private var sharedState: SharedState
     @State private var warmupPlayer: AVAudioPlayer?
+    private static var cloudStoreObserver: NSObjectProtocol?
     
     init() {
+        _sharedState = State(initialValue: Self.makeInitialSharedState())
         FirebaseApp.configure()
         CloudSyncService.start()
+        Self.startCloudStoreObserver()
         
         // Pre-load all sound data into memory
         _ = SoundEffect.cache
@@ -43,6 +46,58 @@ struct LiuApp: App {
     }
 
     private static let menuBarImageSize = CGSize(width: 18, height: 18)
+
+    private static func makeInitialSharedState() -> SharedState {
+        guard let cast = CloudSyncService.loadSyncedCast() else {
+            return SharedState()
+        }
+
+        let lines = cast.values.map { Line(value: $0) }
+        let result = HexagramLibrary.find(lines: lines.map(\.isYang))
+
+        let relatingResult: Hexagram?
+        if lines.contains(where: \.isChanging) {
+            let relatingLines = lines.map { $0.isChanging ? !$0.isYang : $0.isYang }
+            relatingResult = HexagramLibrary.find(lines: relatingLines)
+        } else {
+            relatingResult = nil
+        }
+
+        return SharedState(
+            result: result,
+            relatingResult: relatingResult,
+            showingRelating: false
+        )
+    }
+
+    private static func startCloudStoreObserver() {
+        guard cloudStoreObserver == nil else { return }
+        cloudStoreObserver = NotificationCenter.default.addObserver(
+            forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            object: nil,
+            queue: .main
+        ) { notification in
+            guard shouldHandleCloudStoreDidChange(notification) else { return }
+            NotificationCenter.default.post(name: CloudSyncService.didSyncNotification, object: nil)
+        }
+    }
+
+    private static func shouldHandleCloudStoreDidChange(_ notification: Notification) -> Bool {
+        guard let userInfo = notification.userInfo else { return false }
+
+        guard let reasonRaw = userInfo[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int else {
+            return false
+        }
+        guard reasonRaw == NSUbiquitousKeyValueStoreServerChange ||
+                reasonRaw == NSUbiquitousKeyValueStoreInitialSyncChange else {
+            return false
+        }
+
+        guard let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] else {
+            return false
+        }
+        return !Set(changedKeys).isDisjoint(with: CloudSyncService.syncedKeys)
+    }
 
     private func menuBarImage(for hexagram: Hexagram?) -> NSImage {
         let text = hexagram?.unicodeSymbol ?? "六"

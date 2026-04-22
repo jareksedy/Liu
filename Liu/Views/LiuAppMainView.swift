@@ -175,8 +175,7 @@ struct LiuAppMainView: View {
         .onAppear {
             restoreFromCloud()
         }
-        .onReceive(NotificationCenter.default.publisher(for: NSUbiquitousKeyValueStore.didChangeExternallyNotification)) { notification in
-            guard shouldRestoreFromCloud(for: notification) else { return }
+        .onReceive(NotificationCenter.default.publisher(for: CloudSyncService.didSyncNotification)) { _ in
             restoreFromCloud()
         }
     }
@@ -227,39 +226,50 @@ private extension LiuAppMainView {
 // MARK: - Cloud Sync
 
 private extension LiuAppMainView {
-    func shouldRestoreFromCloud(for notification: Notification) -> Bool {
-        guard let userInfo = notification.userInfo else { return false }
-
-        guard let reasonRaw = userInfo[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int else {
-            return false
-        }
-        guard reasonRaw == NSUbiquitousKeyValueStoreServerChange ||
-                reasonRaw == NSUbiquitousKeyValueStoreInitialSyncChange else {
-            return false
-        }
-
-        guard let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] else {
-            return false
-        }
-        return !Set(changedKeys).isDisjoint(with: CloudSyncService.syncedKeys)
-    }
-
     func restoreFromCloud() {
-        guard let cast = CloudSyncService.loadSyncedCast() else { return }
         // Don't interrupt a cast in progress
         guard lines.isEmpty || lines.count == 6 else { return }
+        guard let cast = CloudSyncService.loadSyncedCast() else {
+            applyCloudClearIfNeeded()
+            return
+        }
         guard cast.updatedAt >= lastLocalCastUpdatedAt else { return }
 
-        lines = cast.values.map { Line(value: $0) }
-        lastLocalCastUpdatedAt = cast.updatedAt
-        sharedState.result = HexagramLibrary.find(lines: lines.map(\.isYang))
+        applySyncUpdateWithoutAnimation {
+            lines = cast.values.map { Line(value: $0) }
+            lastLocalCastUpdatedAt = cast.updatedAt
+            sharedState.result = HexagramLibrary.find(lines: lines.map(\.isYang))
 
-        let hasChangingLines = lines.contains { $0.isChanging }
-        if hasChangingLines {
-            let relatingLines = lines.map { $0.isChanging ? !$0.isYang : $0.isYang }
-            sharedState.relatingResult = HexagramLibrary.find(lines: relatingLines)
-        } else {
+            let hasChangingLines = lines.contains { $0.isChanging }
+            if hasChangingLines {
+                let relatingLines = lines.map { $0.isChanging ? !$0.isYang : $0.isYang }
+                sharedState.relatingResult = HexagramLibrary.find(lines: relatingLines)
+            } else {
+                sharedState.relatingResult = nil
+            }
+        }
+    }
+
+    func applyCloudClearIfNeeded() {
+        let hasLocalState = !lines.isEmpty || sharedState.result != nil || sharedState.relatingResult != nil
+        guard hasLocalState else { return }
+
+        // Treat missing cloud payload as an intentional reset from another device.
+        applySyncUpdateWithoutAnimation {
+            lastLocalCastUpdatedAt = Date().timeIntervalSince1970
+            lines = []
+            showingRelating = false
+            sharedState.showingRelating = false
+            sharedState.result = nil
             sharedState.relatingResult = nil
+        }
+    }
+
+    func applySyncUpdateWithoutAnimation(_ updates: () -> Void) {
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            updates()
         }
     }
 }

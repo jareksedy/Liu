@@ -12,6 +12,7 @@ enum CloudSyncService {
     private static let lineValuesKey = "syncedLineValues" // legacy key
     private static let castPayloadKey = "syncedCastPayload"
     private static let deviceIDKey = "cloudSyncDeviceID"
+    static let didSyncNotification = Notification.Name("Liu.CloudSyncService.DidSync")
 
     struct SyncedCast: Codable {
         let values: [Int]
