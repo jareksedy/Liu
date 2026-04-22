@@ -14,6 +14,7 @@ struct LiuAppMainView: View {
     @State private var lines: [Line] = []
     @State private var showingRelating = false
     @State private var isRestarting = false
+    @State private var lastLocalCastUpdatedAt: TimeInterval = 0
     @AppStorage(Constants.playSFXKey) private var playSFX = true
 
     private var tossCount: Int { lines.count }
@@ -174,7 +175,8 @@ struct LiuAppMainView: View {
         .onAppear {
             restoreFromCloud()
         }
-        .onReceive(NotificationCenter.default.publisher(for: NSUbiquitousKeyValueStore.didChangeExternallyNotification)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: NSUbiquitousKeyValueStore.didChangeExternallyNotification)) { notification in
+            guard shouldRestoreFromCloud(for: notification) else { return }
             restoreFromCloud()
         }
     }
@@ -225,12 +227,31 @@ private extension LiuAppMainView {
 // MARK: - Cloud Sync
 
 private extension LiuAppMainView {
+    func shouldRestoreFromCloud(for notification: Notification) -> Bool {
+        guard let userInfo = notification.userInfo else { return false }
+
+        guard let reasonRaw = userInfo[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int else {
+            return false
+        }
+        guard reasonRaw == NSUbiquitousKeyValueStoreServerChange ||
+                reasonRaw == NSUbiquitousKeyValueStoreInitialSyncChange else {
+            return false
+        }
+
+        guard let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] else {
+            return false
+        }
+        return !Set(changedKeys).isDisjoint(with: CloudSyncService.syncedKeys)
+    }
+
     func restoreFromCloud() {
-        guard let values = CloudSyncService.loadLineValues() else { return }
+        guard let cast = CloudSyncService.loadSyncedCast() else { return }
         // Don't interrupt a cast in progress
         guard lines.isEmpty || lines.count == 6 else { return }
+        guard cast.updatedAt >= lastLocalCastUpdatedAt else { return }
 
-        lines = values.map { Line(value: $0) }
+        lines = cast.values.map { Line(value: $0) }
+        lastLocalCastUpdatedAt = cast.updatedAt
         sharedState.result = HexagramLibrary.find(lines: lines.map(\.isYang))
 
         let hasChangingLines = lines.contains { $0.isChanging }
@@ -289,7 +310,8 @@ private extension LiuAppMainView {
                 sharedState.relatingResult = HexagramLibrary.find(lines: relatingLines)
             }
 
-            CloudSyncService.saveLineValues(lines.map(\.value))
+            lastLocalCastUpdatedAt = Date().timeIntervalSince1970
+            CloudSyncService.saveLineValues(lines.map(\.value), updatedAt: lastLocalCastUpdatedAt)
 
             playSound(.cast)
 
@@ -303,6 +325,8 @@ private extension LiuAppMainView {
     func restart() {
         Analytics.logEvent("hexagram_restart", parameters: nil)
         isRestarting = true
+        lastLocalCastUpdatedAt = Date().timeIntervalSince1970
+        CloudSyncService.clearLineValues()
         withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = false }
         playSound(.drop)
         playSound(.restart)
