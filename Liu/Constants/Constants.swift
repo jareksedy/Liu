@@ -28,4 +28,5 @@ enum Constants {
     static let lineLabelWidth: CGFloat = 14
     static let changingLineColorDelay: TimeInterval = 0.1
     static let playSFXKey: String = "playSFX"
+    static let autoStartRegistrationKey: String = "autoStartRegistrationKey"
 }

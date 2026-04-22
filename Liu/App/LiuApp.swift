@@ -7,6 +7,7 @@
 
 import AVFoundation
 import FirebaseCore
+import ServiceManagement
 import SwiftUI
 
 @main
@@ -19,6 +20,7 @@ struct LiuApp: App {
         _sharedState = State(initialValue: Self.makeInitialSharedState())
         FirebaseApp.configure()
         CloudSyncService.start()
+        Self.registerLaunchAtLoginIfNeeded()
         Self.startCloudStoreObserver()
         
         // Pre-load all sound data into memory
@@ -79,6 +81,20 @@ struct LiuApp: App {
         ) { notification in
             guard shouldHandleCloudStoreDidChange(notification) else { return }
             NotificationCenter.default.post(name: CloudSyncService.didSyncNotification, object: nil)
+        }
+    }
+
+    private static func registerLaunchAtLoginIfNeeded() {
+        guard #available(macOS 13.0, *) else { return }
+        guard !UserDefaults.standard.bool(forKey: Constants.autoStartRegistrationKey) else { return }
+
+        do {
+            try SMAppService.mainApp.register()
+            UserDefaults.standard.set(true, forKey: Constants.autoStartRegistrationKey)
+        } catch {
+#if DEBUG
+            print("Launch-at-login registration failed: \(error.localizedDescription)")
+#endif
         }
     }
 
