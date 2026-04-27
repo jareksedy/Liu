@@ -110,9 +110,10 @@ struct LiuApp: App {
         }
 
         guard let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] else {
-            return false
+            // Some deliveries omit changed keys; still run a restore pass.
+            return true
         }
-        return !Set(changedKeys).isDisjoint(with: CloudSyncService.syncedKeys)
+        return changedKeys.isEmpty || !Set(changedKeys).isDisjoint(with: CloudSyncService.syncedKeys)
     }
 
     private func menuBarImage(for hexagram: Hexagram?) -> NSImage {

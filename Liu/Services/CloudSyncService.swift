@@ -11,6 +11,7 @@ enum CloudSyncService {
     private static let store = NSUbiquitousKeyValueStore.default
     private static let lineValuesKey = "syncedLineValues" // legacy key
     private static let castPayloadKey = "syncedCastPayload"
+    private static let clearPayloadKey = "syncedClearPayload"
     private static let deviceIDKey = "cloudSyncDeviceID"
     static let didSyncNotification = Notification.Name("Liu.CloudSyncService.DidSync")
 
@@ -20,8 +21,13 @@ enum CloudSyncService {
         let sourceDeviceID: String
     }
 
+    struct SyncedClear: Codable {
+        let updatedAt: TimeInterval
+        let sourceDeviceID: String
+    }
+
     static var syncedKeys: Set<String> {
-        [lineValuesKey, castPayloadKey]
+        [lineValuesKey, castPayloadKey, clearPayloadKey]
     }
 
     /// Call once at launch to kick-start iCloud key-value sync.
@@ -41,6 +47,7 @@ enum CloudSyncService {
         guard let data = try? JSONEncoder().encode(payload) else { return }
         store.set(data, forKey: castPayloadKey)
         store.set(values, forKey: lineValuesKey)
+        store.removeObject(forKey: clearPayloadKey)
         store.synchronize()
     }
 
@@ -60,10 +67,24 @@ enum CloudSyncService {
         return nil
     }
 
-    static func clearLineValues() {
+    static func clearLineValues(updatedAt: TimeInterval = Date().timeIntervalSince1970) {
+        let payload = SyncedClear(
+            updatedAt: updatedAt,
+            sourceDeviceID: currentDeviceID
+        )
+        guard let data = try? JSONEncoder().encode(payload) else { return }
+        store.set(data, forKey: clearPayloadKey)
         store.removeObject(forKey: castPayloadKey)
         store.removeObject(forKey: lineValuesKey)
         store.synchronize()
+    }
+
+    static func loadSyncedClear() -> SyncedClear? {
+        guard let data = store.data(forKey: clearPayloadKey),
+              let payload = try? JSONDecoder().decode(SyncedClear.self, from: data) else {
+            return nil
+        }
+        return payload
     }
 
     private static var currentDeviceID: String {

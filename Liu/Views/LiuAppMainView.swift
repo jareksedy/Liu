@@ -230,10 +230,12 @@ private extension LiuAppMainView {
         // Don't interrupt a cast in progress
         guard lines.isEmpty || lines.count == 6 else { return }
         guard let cast = CloudSyncService.loadSyncedCast() else {
-            applyCloudClearIfNeeded()
+            if let clear = CloudSyncService.loadSyncedClear() {
+                applyCloudClearIfNeeded(updatedAt: clear.updatedAt)
+            }
             return
         }
-        guard cast.updatedAt >= lastLocalCastUpdatedAt else { return }
+        guard cast.updatedAt + Constants.cloudSyncClockSkewTolerance >= lastLocalCastUpdatedAt else { return }
 
         applySyncUpdateWithoutAnimation {
             lines = cast.values.map { Line(value: $0) }
@@ -250,13 +252,14 @@ private extension LiuAppMainView {
         }
     }
 
-    func applyCloudClearIfNeeded() {
+    func applyCloudClearIfNeeded(updatedAt: TimeInterval) {
+        guard updatedAt + Constants.cloudSyncClockSkewTolerance >= lastLocalCastUpdatedAt else { return }
         let hasLocalState = !lines.isEmpty || sharedState.result != nil || sharedState.relatingResult != nil
         guard hasLocalState else { return }
 
-        // Treat missing cloud payload as an intentional reset from another device.
+        // Treat synced clear marker as an intentional reset from another device.
         applySyncUpdateWithoutAnimation {
-            lastLocalCastUpdatedAt = Date().timeIntervalSince1970
+            lastLocalCastUpdatedAt = updatedAt
             lines = []
             showingRelating = false
             sharedState.showingRelating = false
@@ -336,7 +339,7 @@ private extension LiuAppMainView {
         Analytics.logEvent("hexagram_restart", parameters: nil)
         isRestarting = true
         lastLocalCastUpdatedAt = Date().timeIntervalSince1970
-        CloudSyncService.clearLineValues()
+        CloudSyncService.clearLineValues(updatedAt: lastLocalCastUpdatedAt)
         withAnimation(.easeInOut(duration: Constants.animationDuration)) { showingRelating = false }
         playSound(.drop)
         playSound(.restart)
