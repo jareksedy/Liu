@@ -29,5 +29,6 @@ enum Constants {
     static let changingLineColorDelay: TimeInterval = 0.1
     static let playSFXKey: String = "playSFX"
     static let autoStartRegistrationKey: String = "autoStartRegistrationKey"
+    static let autoStartPromptShownKey: String = "autoStartPromptShownKey"
     static let cloudSyncClockSkewTolerance: TimeInterval = 3600
 }

@@ -6,6 +6,7 @@
 //
 
 import AVFoundation
+import AppKit
 import FirebaseCore
 import ServiceManagement
 import SwiftUI
@@ -20,7 +21,7 @@ struct LiuApp: App {
         _sharedState = State(initialValue: Self.makeInitialSharedState())
         FirebaseApp.configure()
         CloudSyncService.start()
-        Self.registerLaunchAtLoginIfNeeded()
+        Self.promptForAutoStartIfNeeded()
         Self.startCloudStoreObserver()
         
         // Pre-load all sound data into memory
@@ -84,16 +85,45 @@ struct LiuApp: App {
         }
     }
 
-    private static func registerLaunchAtLoginIfNeeded() {
+    private static func promptForAutoStartIfNeeded() {
         guard #available(macOS 13.0, *) else { return }
-        guard !UserDefaults.standard.bool(forKey: Constants.autoStartRegistrationKey) else { return }
+        let isLoginItemEnabled = SMAppService.mainApp.status == .enabled
+        UserDefaults.standard.set(isLoginItemEnabled, forKey: Constants.autoStartRegistrationKey)
+
+        // Only ask when app is not currently configured as a login item.
+        guard !isLoginItemEnabled else { return }
+        // If user already chose "Not Now", never ask again.
+        guard !UserDefaults.standard.bool(forKey: Constants.autoStartPromptShownKey) else { return }
+
+        let alert = NSAlert()
+        alert.messageText = "Launch Liù at Login?"
+        alert.informativeText = "Have Liù ready when you start your Mac."
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "Enable")
+        alert.addButton(withTitle: "Not Now")
+
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            setLaunchAtLoginEnabled(true)
+        } else {
+            UserDefaults.standard.set(true, forKey: Constants.autoStartPromptShownKey)
+        }
+    }
+
+    private static func setLaunchAtLoginEnabled(_ enabled: Bool) {
+        guard #available(macOS 13.0, *) else { return }
 
         do {
-            try SMAppService.mainApp.register()
-            UserDefaults.standard.set(true, forKey: Constants.autoStartRegistrationKey)
+            if enabled {
+                try SMAppService.mainApp.register()
+                UserDefaults.standard.set(true, forKey: Constants.autoStartRegistrationKey)
+            } else {
+                try SMAppService.mainApp.unregister()
+                UserDefaults.standard.set(false, forKey: Constants.autoStartRegistrationKey)
+            }
         } catch {
 #if DEBUG
-            print("Launch-at-login registration failed: \(error.localizedDescription)")
+            print("Launch-at-login update failed: \(error.localizedDescription)")
 #endif
         }
     }
